@@ -1,0 +1,223 @@
+Public Function U_PTA_CS_DATA_COLLECTION(pUserRoutine As String, pRuleName As String, pEntryPoint As String, pIndex As Integer, pParm As String) As String
+    Dim strSql As String
+    Dim strConsign As String
+    Dim strDelDate As String
+    Dim strAgent As String
+    Dim strSuppl As String
+    Dim strSupplName As String
+    Dim strTransDesc As String
+    Dim strItem As String
+    Dim strClass As String
+    Dim strSize As String
+    Dim strCont As String
+    Dim strAvgDateB4 As String
+    Dim strAvgDateA4 As String
+    
+    Dim dubAvgB4 As Double
+    Dim dubAvgA4 As Double
+    
+    Dim Tablepos As Integer
+    Dim Tablepos1 As Integer
+    Dim Tablepos2 As Integer
+    
+    'U:PTA_CS_DATA_COLLECTION;IMPORT
+    If pRuleName = "IMPORT" Then
+        Dim ExcelObj As Object
+        Dim ExcelBook As Object
+        Dim ExcelSheet As Object
+        Dim I As Long
+        
+        Set ExcelObj = CreateObject("Excel.Application")
+        Set ExcelSheet = CreateObject("Excel.Sheet")
+        
+        'ExcelObj.Workbooks.Open "C:\Commodity_Files\cher_commod.xls"
+        ExcelObj.Workbooks.Open "C:\Users\Justin\Desktop\FolderFolder\EXCEL\PTA_CS\all_consignments.xlsx"
+        
+        Set ExcelBook = ExcelObj.Workbooks(1)
+        Set ExcelSheet = ExcelBook.Worksheets(1)
+        
+        Dim l As ListItem
+        'lvwList.ListItems.Clear
+        With ExcelSheet
+        I = 1
+        
+        strSql = "DROP TEMPORARY TABLE IF EXISTS TMP1;"
+        Tablepos = Open_Table("DEBT_ADDR", strSql, adOpenDynamic, adLockOptimistic)
+        
+        strSql = "CREATE TEMPORARY TABLE TMP1 "
+        strSql = strSql & "(CONS VARCHAR(10)) "
+        Tablepos = Open_Table("DEBT_ADDR", strSql, adOpenDynamic, adLockOptimistic)
+        
+        Do Until .Cells(I, 1) & "" = ""
+            DoEvents
+            
+            'SET VARIABLES FOR ROW i
+            strConsign = .Cells(I, 1)
+            
+            strSql = "INSERT INTO TMP1 (CONS) VALUES ('" & strConsign & "')"
+            Tablepos1 = Open_Table("DEBT_ADDR", strSql, adOpenDynamic, adLockOptimistic)
+            
+            I = I + 1
+        Loop
+        End With
+        
+        ExcelObj.Workbooks.Close
+        
+        Set ExcelSheet = Nothing
+        Set ExcelBook = Nothing
+        Set ExcelObj = Nothing
+        
+        'Consignment number
+        'Delivery Date
+        'Issue Date
+        'Sale enquiry
+        'Price sold
+        'Discard Report
+        'Market average 3 days before sale/discard and 3 days after sale/discard.
+        
+        Open "C:\Users\Justin\Desktop\FolderFolder\EXCEL\PTA_CS\PTA_CS_20201118.csv" For Output As 1
+        Print #1, "INFORMATION RELATING TO CLAIMS FOR TSHWANE MARKET"
+        
+        'LOOP THROUGH EACH CONSIGNMENT AND GATHER REQUESTED DATA
+        strSql = "SELECT CONS FROM TMP1 GROUP BY CONS"
+        Tablepos = Open_Table("DEBT_ADDR", strSql, adOpenDynamic, adLockOptimistic)
+        Do While RStab(Tablepos).rs.EOF = False
+            
+            strConsign = GetField(Tablepos, "CONS")
+            
+            'SELECT AGENT AND DELDATE
+            strSql = "SELECT ST_DELDATE, ST_AGENT FROM STK_TRANS WHERE ST_MARKET = '" & gblOrgstruct & "' AND ST_CONSIGN = '" & strConsign & "' AND ST_UPD_DATE BETWEEN '2019/12/01' AND '2020/02/28'"
+            Tablepos1 = Open_Table("ADDR_TYPE", strSql, adOpenDynamic, adLockOptimistic)
+            strDelDate = GetField(Tablepos1, "ST_DELDATE")
+            strAgent = GetField(Tablepos1, "ST_AGENT")
+            RStab(Tablepos1).rs.Close
+            RStab(Tablepos1).Open = False
+            
+            'SELECT SUPPLIER
+            strSql = "SELECT SM_SUPP,SUM_NAME FROM STK_MAST INNER JOIN SUPPLIER_MAST ON SUM_SUPPL = SM_SUPP "
+            strSql = strSql & "WHERE SM_MARKET = '" & gblOrgstruct & "' AND SM_AGENT = '" & strAgent & "' AND SM_DELNO = '" & Left(strConsign, 6) & "' AND SM_DDATE = '" & Format(strDelDate, "YYYY/MM/DD") & "'"
+            Tablepos1 = Open_Table("ADDR_TYPE", strSql, adOpenDynamic, adLockOptimistic)
+            strSuppl = GetField(Tablepos1, "SM_SUPP")
+            strSupplName = GetField(Tablepos1, "SUM_NAME")
+            RStab(Tablepos1).rs.Close
+            RStab(Tablepos1).Open = False
+            
+            Print #1, "CONSIGNMENT  : " & strConsign
+            Print #1, "DELIVERY DATE: " & Format(strDelDate, "YYYY/MM/DD")
+            Print #1, "AGENT        : " & strAgent
+            Print #1, "SUPPLIER     : " & strSuppl & " " & strSupplName
+            Print #1, ""
+            
+            'SELECT ALL COLD STORAGE TRANSACTIONS
+            strSql = "SELECT LT_DEPNO,LT_PRQTY,LT_DEP_DATE,LT_TRDATE,LT_TRVALUE,LT_TRVAT,LT_CHG_PRD,LT_TRTARIFF FROM LOC_TRANS "
+            strSql = strSql & "WHERE LT_MARKET = '" & gblOrgstruct & "' AND LT_AGENT = '" & strAgent & "' AND LT_CONSIGNO = '" & strConsign & "' AND LT_DELDATE = '" & Format(strDelDate, "YYYY/MM/DD") & "'"
+            strSql = strSql & " AND LT_TYPE = 'IS' ORDER BY LT_DEPNO"
+            Tablepos1 = Open_Table("ADDR_TYPE", strSql, adOpenDynamic, adLockOptimistic)
+            If RStab(Tablepos1).rs.EOF = False Then
+                Print #1, "--ISSUES--"
+                Print #1, "DEPNO,DEPDATE,ISSDATE,QTY,TARIFF,PRD,VALUE,VAT,TOTAL"
+            End If
+            Do While RStab(Tablepos1).rs.EOF = False
+                Print #1, GetField(Tablepos1, "LT_DEPNO") & "," & GetField(Tablepos1, "LT_DEP_DATE") & "," & GetField(Tablepos1, "LT_TRDATE") & "," & Val(GetField(Tablepos1, "LT_TRQTY")) & "," & _
+                GetField(Tablepos1, "LT_TRTARIFF") & "," & GetField(Tablepos1, "LT_CHG_PRD") & "," & Val(GetField(Tablepos1, "LT_TRVALUE")) & "," & Val(GetField(Tablepos1, "LT_TRVAT")) & "," & Val(GetField(Tablepos1, "LT_TRVALUE")) + Val(GetField(Tablepos1, "LT_TRVAT"))
+                
+                RStab(Tablepos1).rs.MoveNext
+            Loop
+            RStab(Tablepos1).rs.Close
+            RStab(Tablepos1).Open = False
+            
+            'SELECT ALL SALES AND DISCARDS
+            strSql = "SELECT ST_UPD_DATE,ST_TRTIME,ST_TRTYPE,ST_DOCNO,ST_TRQTY,ST_TRPRICE,(ST_TRQTY * ST_TRPRICE) AS VAL,SD_ITEM,SD_CLASS,SD_SIZE,SD_CONT "
+            strSql = strSql & "FROM STK_TRANS INNER JOIN STK_DETS ON SD_MARKET = ST_MARKET AND SD_AGENT = ST_AGENT AND SD_CONSIGN = ST_CONSIGN AND SD_DATE = ST_DELDATE "
+            strSql = strSql & "WHERE ST_MARKET = '" & gblOrgstruct & "' AND ST_AGENT = '" & strAgent & "' AND ST_CONSIGN = '" & strConsign & "' AND ST_DELDATE = '" & Format(strDelDate, "YYYY/MM/DD") & "' "
+            strSql = strSql & "AND ((ST_TRTYPE IN ('SA','DE','DT') AND ST_PAID = 'Y') OR ST_TRTYPE = 'DS') ORDER BY ST_TRDTE,ST_TRTIME "
+            Tablepos1 = Open_Table("ADDR_TYPE", strSql, adOpenDynamic, adLockOptimistic)
+            If RStab(Tablepos1).rs.EOF = False Then
+                Print #1, "--SALES - DELETIONS - DISCARDS--"
+                Print #1, "DATE,TIME,TRTYPE,DOCNO,ITEM,CLASS,CONT,QTY,PRICE,VAL,AVG3B4,AVG3AF"
+            End If
+            Do While RStab(Tablepos1).rs.EOF = False
+                If GetField(Tablepos1, "ST_TRTYPE") = "SA" Then
+                    strTransDesc = "SALE"
+                ElseIf GetField(Tablepos1, "ST_TRTYPE") = "DE" Then
+                    strTransDesc = "DELETION"
+                ElseIf GetField(Tablepos1, "ST_TRTYPE") = "DT" Then
+                    strTransDesc = "TRANSFER"
+                Else
+                    strTransDesc = "DISCARD"
+                End If
+                strItem = GetField(Tablepos1, "SD_ITEM")
+                strClass = GetField(Tablepos1, "SD_CLASS")
+                strSize = GetField(Tablepos1, "SD_SIZE")
+                
+                If GetField(Tablepos1, "ST_TRTYPE") <> "DS" Then
+                    'GET THE DATES 3 DAYS BEFORE THE SALE DATE
+                    'intSelCount = 0
+                    strSql = "SELECT CSV_DATE FROM CSV_DATE WHERE CSV_DATE < '" & Format(GetField(Tablepos1, "ST_UPD_DATE"), "YYYY/MM/DD") & "' ORDER BY CSV_DATE DESC LIMIT 3"
+                    Tablepos2 = Open_Table("CSV_DATE", strSql, adOpenDynamic, adLockOptimistic)
+                    Do While RStab(Tablepos2).rs.EOF = False
+                        'intSelCount = intSelCount + 1
+                        'If intSelCount = 3 Then
+                            strAvgDateB4 = GetField(Tablepos2, "CSV_DATE")
+                        'End If
+                        
+                        RStab(Tablepos2).rs.MoveNext
+                    Loop
+                    RStab(Tablepos2).rs.Close
+                    RStab(Tablepos2).Open = False
+                                    
+                    strSql = "SELECT (SUM((ST_TRQTY * ST_TRPRICE) * IF (ST_TRTYPE = 'SA', 1, - 1))) / (SUM(ST_TRQTY * IF (ST_TRTYPE = 'SA', 1, - 1))) AS AVG "
+                    strSql = strSql & "FROM STK_TRANS INNER JOIN STK_DETS ON SD_MARKET = ST_MARKET AND SD_AGENT = ST_AGENT AND SD_CONSIGN = ST_CONSIGN AND SD_DATE = ST_DELDATE "
+                    strSql = strSql & "WHERE ST_MARKET = '" & gblOrgstruct & "' AND SD_ITEM = '" & strItem & "' AND SD_CLASS = '" & strClass & "' AND SD_SIZE = '" & strSize & "' "
+                    strSql = strSql & "AND ST_UPD_DATE = '" & Format(strAvgDateB4, "YYYY/MM/DD") & "'"
+                    Tablepos2 = Open_Table("STK_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                    dubAvgB4 = Val(GetField(Tablepos2, "AVG"))
+                    RStab(Tablepos2).rs.Close
+                    RStab(Tablepos2).Open = False
+                    
+                    'GET THE DATES 3 DAYS AFTER THE SALE DATE
+                    'intSelCount = 0
+                    strSql = "SELECT CSV_DATE FROM CSV_DATE WHERE CSV_DATE > '" & Format(GetField(Tablepos1, "ST_UPD_DATE"), "YYYY/MM/DD") & "' ORDER BY CSV_DATE DESC LIMIT 3"
+                    Tablepos2 = Open_Table("CSV_DATE", strSql, adOpenDynamic, adLockOptimistic)
+                    Do While RStab(Tablepos2).rs.EOF = False
+                        'intSelCount = intSelCount + 1
+                        'If intSelCount = 3 Then
+                            strAvgDateA4 = GetField(Tablepos2, "CSV_DATE")
+                        'End If
+                        
+                        RStab(Tablepos2).rs.MoveNext
+                    Loop
+                    RStab(Tablepos2).rs.Close
+                    RStab(Tablepos2).Open = False
+                    
+                    strSql = "SELECT (SUM((ST_TRQTY * ST_TRPRICE) * IF (ST_TRTYPE = 'SA', 1, - 1))) / (SUM(ST_TRQTY * IF (ST_TRTYPE = 'SA', 1, - 1))) AS AVG "
+                    strSql = strSql & "FROM STK_TRANS INNER JOIN STK_DETS ON SD_MARKET = ST_MARKET AND SD_AGENT = ST_AGENT AND SD_CONSIGN = ST_CONSIGN AND SD_DATE = ST_DELDATE "
+                    strSql = strSql & "WHERE ST_MARKET = '" & gblOrgstruct & "' AND SD_ITEM = '" & strItem & "' AND SD_CLASS = '" & strClass & "' AND SD_SIZE = '" & strSize & "' "
+                    strSql = strSql & "AND ST_UPD_DATE = '" & Format(strAvgDateA4, "YYYY/MM/DD") & "'"
+                    Tablepos2 = Open_Table("STK_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                    dubAvgA4 = Val(GetField(Tablepos2, "AVG"))
+                    RStab(Tablepos2).rs.Close
+                    RStab(Tablepos2).Open = False
+                Else
+                    dubAvgB4 = 0
+                    dubAvgA4 = 0
+                End If
+                
+                'DATE,TIME,TRTYPE,DOCNO,ITEM,CLASS,CONT,QTY,PRICE,VAL,AVG3B4,AVG3AF
+                
+                Print #1, Format(GetField(Tablepos1, "ST_TRDTE"), "YYYY/MM/DD") & "," & GetField(Tablepos1, "ST_TRTIME") & "," & strTransDesc & "," & Val(GetField(Tablepos1, "ST_DOCNO")) & "," & _
+                GetField(Tablepos1, "SD_ITEM") & "," & GetField(Tablepos1, "SD_CLASS") & "," & GetField(Tablepos1, "SD_SIZE") & "," & GetField(Tablepos1, "SD_CONT") & "," & GetField(Tablepos1, "ST_TRQTY") & "," & _
+                GetField(Tablepos1, "ST_TRPRICE") & "," & Val(GetField(Tablepos1, "VAL")) & "," & dubAvgB4 & "," & dubAvgA4
+                
+                RStab(Tablepos1).rs.MoveNext
+            Loop
+            RStab(Tablepos1).rs.Close
+            RStab(Tablepos1).Open = False
+            
+            RStab(Tablepos).rs.MoveNext
+        Loop
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        Close #1
+    End If
+End Function

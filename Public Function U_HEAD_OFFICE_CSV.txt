@@ -1,0 +1,2291 @@
+Public Function U_HEAD_OFFICE_CSV(pUserRoutine As String, pRuleName As String, pEntryPoint As String, pIndex As Integer, pParm As String) As String
+    'USE THE BELOW KEY COMBINATION TO SEARCH THE FUNCTION AND FIND THE START OF EACH SECTION:
+    '\\//
+    Dim strDelBatFile As String
+    Dim strCPBatFile As String
+    Dim strZipBatFile As String
+    Dim strCodes As String
+    Dim strSql As String
+    Dim FTPpath As String
+    Dim openIP As String
+    Dim Uname As String
+    Dim pwd As String
+    Dim strDir As String
+    Dim ftpfile As String
+    Dim batfile As String
+    Dim strPath As String
+    Dim strExportPath As String
+    Dim strZipPath As String
+    Dim Tablepos91 As Integer
+    Dim intCount As Integer
+    Dim intAgentCount As Integer
+    Dim strAgent As String
+    Dim strAgents As String
+    Dim Tablepos As Integer
+    Dim Tablepos2 As Integer
+    
+    'CHARGES v
+    Dim Tablepos3 As Integer
+    Dim strType As String
+    Dim strCode As String
+    Dim strDeductCode As String
+    Dim strDate As String
+    Dim strTime As String
+    Dim strChargeDate As String
+    Dim strChargeTime As String
+    Dim strConsign As String
+    Dim dubChargeAmount As Double
+    Dim dubChargeVat As Double
+    Dim dubTotChargeAmount As Double
+    Dim dubTotChargeVat As Double
+    Dim dubTotLevyAmount As Double
+    Dim dubTotLevyVat As Double
+    Dim strLevyCode As String
+    Dim strRoom As String
+    Dim strOwner As String
+    Dim strConsEnd As String
+    Dim strDepNo As String
+    Dim intcounterzx As Integer
+    
+    'NEW GENERAL VARIABLES FOR THE MOKETSI INTERFACE
+    Dim strMarket As String
+    Dim strDocNo As String
+    Dim strTransNo As String
+    Dim strDelind As String
+    Dim strDelDate As String
+        
+    'NEW LEVY_TRANS VARIABLES FOR THE MOKETSI INTERFACE
+    Dim strSupplier As String
+    
+    'NEW LOC_TRANS VARIABLES FOR THE MOKETSI INTERFACE
+    Dim strUser As String
+    Dim strComment As String
+    
+    strMarket = gblOrgstruct
+    'CHARGES^
+    Dim strSmanName As String
+    Dim strSS As String
+    Dim strIS As String
+    Dim strSmanTel As String
+    Dim strSmanCell As String
+    Dim strSMPS As String
+    Dim strSMPSPin As String
+    Dim strSMAD1 As String
+    Dim strSMAD2 As String
+    Dim strSMAD3 As String
+    Dim strSMPC As String
+    Dim strSMHC As String
+    Dim strSMMKT As String
+    Dim strSMAudDate As String
+    Dim strSMAudTime As String
+    Dim strSMIP As String
+    Dim strSMUser As String
+        
+    Dim Tablepos4 As Integer
+    Dim Tablepos5 As Integer
+    Dim Tablepos6 As Integer
+    Dim str_Sql As String
+    Dim strTrType As String
+    Dim strDebtor As String
+    Dim strSubDebtor As String
+    Dim strSman As String
+    Dim strTrQty As String
+    Dim cuTRPRICE As Currency
+    Dim cuVat As Currency
+    Dim strTRDATE As String
+    Dim strTRTIME As String
+    Dim strCASHP As String
+    Dim strCashier As String
+    Dim strRECNO As String
+    Dim strReasonCode As String
+    Dim strReason As String
+    Dim strItem As String
+    Dim strCont As String
+    Dim strContMass As String
+    Dim strClass As String
+    Dim strSize As String
+    Dim strCount As String
+    Dim strProv As String
+    Dim strColour As String
+    Dim strPallQTY1 As String
+    Dim strPallQTY2 As String
+    Dim strDelno As String
+    Dim strDelTime As String
+    Dim cuTotPallValue As Currency
+    Dim strWS As String
+    
+    Dim strPall1 As String
+    Dim intPallQty1 As Integer
+    Dim intPallCount As Integer
+    Dim strPall2 As String
+    Dim intPallQty2 As Integer
+    Dim intTotPalls As String
+    Dim strTRTIME2 As String
+    Dim strTRDATE2 As String
+    Dim strInv As String
+    Dim cuPallTRVAL1 As Currency
+    Dim cuPallTRVAT1 As Currency
+    Dim cuPallTRVAT2 As Currency
+    Dim cuPallTRVAL2 As Currency
+    Dim intTotQTY As Integer
+    Dim cuTotPRICE As Currency
+    Dim cuTotPallVat As Currency
+    Dim cuTotVALUE As Currency
+    Dim cuTotTRPRICE As Currency
+    Dim cuTotTRVAT As Currency
+    Dim intConsCount As Integer
+    Dim strTrans As String
+    Dim strPallTrans As String
+    Dim strRecSave(30000) As String
+    Dim intRecCount As Integer
+    Dim strGetRecord As String
+    Dim strTotTRQTY As String
+    Dim lngTotTRQTY As Long
+    Dim cuTotalValue As Currency
+    Dim strCommCode As String
+    Dim strDuesCode As String
+    Dim strCommChargeDate As String
+    Dim strCommChargeTime As String
+    Dim strDuesChargeDate As String
+    Dim strDuesChargeTime As String
+    Dim strRefno As String
+    Dim strCommAgent As String
+    Dim strDuesAgent As String
+    Dim strCommConsign As String
+    Dim strDuesConsign As String
+    Dim dubCommChargeAmount As Double
+    Dim dubCommChargeVat As Double
+    Dim dubDuesChargeAmount As Double
+    Dim dubDuesChargeVat As Double
+    Dim lngTotalRecords As Long
+    Dim dubCostPrice As Double
+    Dim strChanged As String                   'JD20090212
+    Dim strCertno As String
+    Dim strProvSale As String
+    Dim PSD As String
+    
+    'NEW FIELDS FOR MOKETSI INTERFACE - JD 20140220 (SALES.CSV)
+    Dim strHigh As String
+    Dim strLow As String
+    Dim strAverage As String
+    Dim strPSC As String
+    Dim strUpdDate As String
+    Dim strUpdTime As String
+    Dim strDDT As String
+    Dim dCV As Double
+    Dim dCVV As Double
+    Dim dDV As Double
+    Dim dDVV As Double
+    Dim mkt As String
+    Dim DI As String
+    Dim UTime As String
+    Dim UDate As String
+    
+    'NEW FIELDS FOR MOKETSI INTERFACE - JD 20140221 (CHARGES.CSV)
+    mkt = gblOrgstruct
+
+    'from supplier_aud
+    Dim strSuppl As String
+    Dim strSupplName As String
+    Dim strIncomeTaxNo As String
+    Dim strArea As String
+    Dim strVatNo As String
+    Dim strLanguage As String
+    Dim strIdNo As String
+    Dim strBlocked As String
+    Dim strTfrSupplno As String
+    Dim strTfrActiveDate As String
+    Dim strTfrPackage As String
+    Dim strTfrFax As String
+    Dim strFinYearEnd As String
+    Dim strAddr1 As String
+    Dim strAddr2 As String
+    Dim strAddr3 As String
+    Dim strPcode As String
+    Dim strFaxno As String
+    Dim strCellno As String
+    Dim strEmail As String
+    Dim strFarmName As String
+    Dim strTelNo1 As String
+    Dim strDummy As String
+    Dim intInsCount As Integer
+    Dim intUpdCount As Integer
+    Dim intDelCount As Integer
+    Dim intAddrInsCount As Integer
+    Dim intAddrUpdCount As Integer
+    Dim intAddrDelCount As Integer
+    Dim strReg_Number As String
+    'from supplier_aud
+    
+    'from delivery_aud
+    Dim strCheckSuppl As String
+    Dim strAudTime As String
+    Dim strAudDate As String
+    Dim strWaybill As String
+    Dim strBlock As String
+    Dim strVatRegNo As String
+    Dim strMREFNO As String
+    Dim strTransporter As String
+    Dim strMRSREF As String
+    Dim strVehicleReg As String
+    Dim strCommp As String
+    Dim strWholesale As String
+    Dim strConsDeleted As String
+    Dim strWaybillConf As String
+    Dim strUPDType As String
+    Dim strMRSItem As String
+    Dim strMRSVar As String
+    Dim strMRSGrade As String
+    Dim strMRSSize As String
+    Dim strMRSClass As String
+    Dim strMRSCont As String
+    Dim intConQty As Long
+    Dim intRecQty As Long
+    Dim strConQty As String
+    Dim strRECQTY As String
+    Dim strPallCount As String
+    Dim intAvailQty As Long
+    Dim intTotAvailQty As Long
+    Dim intCount1 As Integer
+    Dim intCount2 As Integer
+    Dim IntCount3 As Integer
+    Dim IntCount4 As Integer
+    Dim intCount5 As Integer
+    Dim intCount6 As Integer
+    Dim strCostPrice As String
+    'NEW FIELDS ADDED BY JD 20140224 FOR MOKETSI
+    Dim strSection As String
+    Dim strSeq As String
+    Dim dubHPrice As Double
+    Dim dubLPrice As Double
+    Dim dubSls As Double
+    Dim dubVat As Double
+    Dim dubDues As Double
+    Dim dubDuesV As Double
+    Dim dubComm As Double
+    Dim dubCommV As Double
+    Dim dubLevy As Double
+    Dim dubLevyV As Double
+    Dim lngDisQty As Long
+    Dim lngCSQTY As Long
+    Dim lngSldQty As Long
+    Dim strCDate As String
+    'from delivery_aud
+        
+    'from suppl_fax_amend
+    Dim prtParms As String
+    Dim strLastPage As String
+    Dim strMarketName As String
+    Dim strFaxno2 As String
+    Dim strFaxno3 As String
+    Dim strFaxno4 As String
+    Dim strTel1 As String
+    Dim strTelCont1 As String
+    Dim strCell1 As String
+    Dim strTel2 As String
+    Dim strTelCont2 As String
+    Dim strCell2 As String
+    Dim strCell3 As String
+    Dim strTelCont3 As String
+    Dim strCellCont1 As String
+    Dim strCellCont2 As String
+    Dim strCellCont3 As String
+    Dim strEmail2 As String
+    Dim strEmail3 As String
+    Dim strEmail4 As String
+    Dim strFaxEmail As String
+    Dim strUpdDade As String
+    Dim strIP As String
+    Dim strAlias As String
+    'from suppl_fax_amend
+    
+    'U:HEAD_OFFICE_CSV;COLLECT
+    If pRuleName = "COLLECT" Then
+        strSql = "SELECT DISTINCT(BOA_AGENT) FROM BO_AGENT_DAILY ORDER BY BOA_AGENT"
+        Tablepos91 = Open_Table("BO_AGENT_DAILY", strSql, adOpenDynamic, adLockOptimistic)
+        Do While RStab(Tablepos91).rs.EOF = False
+            DoEvents
+            
+            strAgent = GetField(Tablepos91, "BOA_AGENT")
+            
+            'READ THE ALIAS
+            strSql = "SELECT BOA_ALIAS FROM BO_AGENT_DAILY WHERE BOA_AGENT = '" & strAgent & "'"
+            Tablepos = Open_Table("DEBT_ADDR", strSql, adOpenDynamic, adLockOptimistic)
+            strAlias = GetField(Tablepos, "BOA_ALIAS")
+            RStab(Tablepos).rs.Close
+            RStab(Tablepos).Open = False
+            
+            If strAlias = "" Then strAlias = strAgent
+            
+            If strAgents = "" Then
+                strAgents = strAgent
+            Else
+                strAgents = strAgents & "," & strAgent
+            End If
+            
+            'CHECK IF THIS AGENT HAS A FOLDER UNDER EXPORT. IF NOT, CREATE IT.
+            If dir("C:\Legend\Proj_Fms\Export\" & strAgent & "\", vbDirectory) = "" Then
+                MkDir "C:\Legend\Proj_Fms\Export\" & strAgent
+            End If
+            strPath = "C:\Legend\Proj_Fms\Export\" & strAgent
+            strExportPath = "C:\Legend\Proj_Fms\Export\"
+            
+            'COPY THE DEBTOR CSV FILES INTO THE AGENT DIRECTORY
+            If FileExists(strExportPath & "\debtor_new.csv") = True Then
+                FileCopy strExportPath & "\debtor_new.csv", strPath & "\debtor_new.csv"
+            End If
+            If FileExists(strExportPath & "\debtor_amend.csv") = True Then
+                FileCopy strExportPath & "\debtor_amend.csv", strPath & "\debtor_amend.csv"
+            End If
+            If FileExists(strExportPath & "\debtor_delete.csv") = True Then
+                FileCopy strExportPath & "\debtor_delete.csv", strPath & "\debtor_delete.csv"
+            End If
+            
+            '\\//
+            '=========================================
+            'U:SUPPLIER_AUD;RUN *
+            '=========================================
+            '1)INS TYPE=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+            strSql = "SELECT * FROM AUD_SUPPLIER_MAST INNER JOIN SUPPLIER_MAST ON SUM_SUPPL = ASUM_SUPPL "
+            'strSql = strSql & " WHERE ASUM_AUD_TYPE = 'INS' AND ASUM_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND SUM_AGENT_CODE LIKE '%" & strAgent & "%'"
+            strSql = strSql & " WHERE ASUM_AUD_TYPE = 'INS' AND ASUM_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND SUM_AGENT_CODE LIKE '%" & strAgent & "%'"
+            Tablepos = Open_Table("AUD_SUPPLIER_MAST", strSql, adOpenDynamic, adLockOptimistic)
+            
+            'Open "C:\legend\proj_fms\export\supplier_new.csv" For Output As 1
+            Open strPath & "\supplier_new.csv" For Output As 1
+            Do While RStab(Tablepos).rs.EOF = False
+                strSuppl = GetField(Tablepos, "ASUM_SUPPL")
+                strSupplName = GetField(Tablepos, "ASUM_NAME")
+                strSupplName = Replace(strSupplName, ",", " ")
+                
+                strIncomeTaxNo = GetField(Tablepos, "ASUM_INC_TAX_NO")
+                strArea = GetField(Tablepos, "ASUM_AREA")
+                strVatNo = GetField(Tablepos, "ASUM_VAT_NO")
+                strLanguage = GetField(Tablepos, "ASUM_LANGUAGE")
+                strIdNo = GetField(Tablepos, "ASUM_ID_NO")
+                strBlocked = GetField(Tablepos, "ASUM_BLOCKED")
+                strTfrSupplno = GetField(Tablepos, "ASUM_TFR_SUPPLNO")
+                strTfrActiveDate = GetField(Tablepos, "ASUM_TFR_ACTIVE_DATE")
+                strTfrPackage = GetField(Tablepos, "ASUM_TFR_PACKAGE")
+                strTfrFax = GetField(Tablepos, "ASUM_TFR_FAX")
+                strFinYearEnd = GetField(Tablepos, "ASUM_FINYEAR_END")
+                strReg_Number = GetField(Tablepos, "ASUM_REG_NUMBER")
+                
+                'strSql = "SELECT * FROM AUD_SUPPL_ADDR WHERE ASA_CODE = '" & strSuppl & "' AND ASA_AUD_TYPE = 'INS' AND ISNULL(ASA_UPD_DATE) AND ISNULL(ASA_UPD_TIME)"
+                'SUPPLIER ADDRESS
+                strSql = "SELECT * FROM AUD_SUPPL_ADDR INNER JOIN SUPPL_ADDR ON SA_CODE = ASA_CODE WHERE ASA_CODE = '" & strSuppl & "' "
+                'strSql = strSql & "AND ASA_AUD_TYPE = 'INS' AND ASA_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND SA_DEFAULT = 'Y'"
+                strSql = strSql & "AND ASA_AUD_TYPE = 'INS' AND ASA_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND SA_DEFAULT = 'Y'"
+                Tablepos2 = Open_Table("AUD_SUPPL_ADDR", strSql, adOpenDynamic, adLockOptimistic)
+                strAddr1 = GetField(Tablepos2, "ASA_ADDR1")
+                strAddr1 = Replace(strAddr1, ",", " ")
+                strAddr2 = GetField(Tablepos2, "ASA_ADDR2")
+                strAddr2 = Replace(strAddr2, ",", " ")
+                strAddr3 = GetField(Tablepos2, "ASA_ADDR3")
+                strAddr3 = Replace(strAddr3, ",", " ")
+                strPcode = GetField(Tablepos2, "ASA_PCODE")
+                strTelNo1 = GetField(Tablepos2, "ASA_TELNO1")
+                strFaxno = GetField(Tablepos2, "ASA_FAXNO")
+                strCellno = GetField(Tablepos2, "ASA_CELLNO")
+                strEmail = GetField(Tablepos2, "ASA_EMAIL")
+                strFarmName = GetField(Tablepos2, "ASA_FARM_NAME")
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                'CHECK IF THIS IS A DUMMY SUPPLIER
+                strSql = "SELECT DS_SUPPL FROM DUMMY_SUPPL WHERE DS_SUPPL = '" & strSuppl & "'"
+                Tablepos2 = Open_Table("DUMMY_SUPPL", strSql, adOpenDynamic, adLockOptimistic)
+                If GetField(Tablepos2, "DS_SUPPL") = "" Then
+                    strDummy = "N"
+                Else
+                    strDummy = "Y"
+                End If
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                If strDummy <> "Y" Then
+                    'MARKET ADDED BY JD 20140224 -> FOR MOKETSI
+                    Print #1, strSuppl & "," & strSupplName & "," & strAddr1 & "," & strAddr2 & "," & strAddr3 & "," & strPcode & "," & strTelNo1 & "," & strFaxno & "," & strCellno & "," & strEmail & "," & strIncomeTaxNo & "," & strArea & "," & strVatNo & "," & strLanguage & "," & strIdNo & "," & strFarmName & "," & strTfrSupplno & "," & Format(strTfrActiveDate, "YYYY/MM/DD") & "," & strTfrPackage & "," & strTfrFax & "," & strFinYearEnd & "," & strBlocked & "," & strReg_Number & "," & gblOrgstruct & "," & strAlias
+                End If
+                
+                RStab(Tablepos).rs.MoveNext
+            Loop
+            Close #1
+            RStab(Tablepos).rs.Close
+            RStab(Tablepos).Open = False
+            'NEW====================================
+            
+            '2)UPD TYPE=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+            strSql = "SELECT * FROM AUD_SUPPLIER_MAST INNER JOIN SUPPLIER_MAST ON SUM_SUPPL = ASUM_SUPPL "
+            'strSql = strSql & " WHERE ASUM_AUD_TYPE = 'UPD' AND ASUM_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND SUM_AGENT_CODE LIKE '%" & strAgent & "%'"
+            strSql = strSql & " WHERE ASUM_AUD_TYPE = 'UPD' AND ASUM_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND SUM_AGENT_CODE LIKE '%" & strAgent & "%'"
+            Tablepos = Open_Table("AUD_SUPPLIER_MAST", strSql, adOpenDynamic, adLockOptimistic)
+            Open strPath & "\supplier_amend.csv" For Output As 1
+            Do While RStab(Tablepos).rs.EOF = False
+                strSuppl = GetField(Tablepos, "ASUM_SUPPL")
+                strSupplName = GetField(Tablepos, "ASUM_NAME")
+                strSupplName = Replace(strSupplName, ",", " ")
+                
+                strIncomeTaxNo = GetField(Tablepos, "ASUM_INC_TAX_NO")
+                strArea = GetField(Tablepos, "ASUM_AREA")
+                strVatNo = GetField(Tablepos, "ASUM_VAT_NO")
+                strLanguage = GetField(Tablepos, "ASUM_LANGUAGE")
+                strIdNo = GetField(Tablepos, "ASUM_ID_NO")
+                strBlocked = GetField(Tablepos, "ASUM_BLOCKED")
+                strTfrSupplno = GetField(Tablepos, "ASUM_TFR_SUPPLNO")
+                strTfrActiveDate = GetField(Tablepos, "ASUM_TFR_ACTIVE_DATE")
+                strTfrPackage = GetField(Tablepos, "ASUM_TFR_PACKAGE")
+                strTfrFax = GetField(Tablepos, "ASUM_TFR_FAX")
+                strFinYearEnd = GetField(Tablepos, "ASUM_FINYEAR_END")
+                strReg_Number = GetField(Tablepos, "ASUM_REG_NUMBER")
+                
+                'SUPPLIER ADDRESS
+                strSql = "SELECT * FROM AUD_SUPPL_ADDR INNER JOIN SUPPL_ADDR ON SA_CODE = ASA_CODE WHERE ASA_CODE = '" & strSuppl & "' "
+                'strSql = strSql & "AND ASA_AUD_TYPE = 'UPD' AND ASA_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND SA_DEFAULT = 'Y'"
+                strSql = strSql & "AND ASA_AUD_TYPE = 'UPD' AND ASA_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND SA_DEFAULT = 'Y'"
+                Tablepos2 = Open_Table("AUD_SUPPL_ADDR", strSql, adOpenDynamic, adLockOptimistic)
+                strCode = GetField(Tablepos2, "ASA_CODE")
+                strAddr1 = GetField(Tablepos2, "ASA_ADDR1")
+                strAddr1 = Replace(strAddr1, ",", " ")
+                strAddr2 = GetField(Tablepos2, "ASA_ADDR2")
+                strAddr2 = Replace(strAddr2, ",", " ")
+                strAddr3 = GetField(Tablepos2, "ASA_ADDR3")
+                strAddr3 = Replace(strAddr3, ",", " ")
+                strPcode = GetField(Tablepos2, "ASA_PCODE")
+                strFaxno = GetField(Tablepos2, "ASA_FAXNO")
+                strCellno = GetField(Tablepos2, "ASA_CELLNO")
+                strEmail = GetField(Tablepos2, "ASA_EMAIL")
+                strFarmName = GetField(Tablepos2, "ASA_FARM_NAME")
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                'CHECK IF THIS IS A DUMMY SUPPLIER
+                strSql = "SELECT DS_SUPPL FROM DUMMY_SUPPL WHERE DS_SUPPL = '" & strSuppl & "'"
+                Tablepos2 = Open_Table("DUMMY_SUPPL", strSql, adOpenDynamic, adLockOptimistic)
+                If GetField(Tablepos2, "DS_SUPPL") = "" Then
+                    strDummy = "N"
+                Else
+                    strDummy = "Y"
+                End If
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                If strDummy <> "Y" Then
+                    Print #1, strSuppl & "," & strSupplName & "," & strAddr1 & "," & strAddr2 & "," & strAddr3 & "," & strPcode & "," & strTelNo1 & "," & strFaxno & "," & strCellno & "," & strEmail & "," & strIncomeTaxNo & "," & strArea & "," & strVatNo & "," & strLanguage & "," & strIdNo & "," & strFarmName & "," & strTfrSupplno & "," & Format(strTfrActiveDate, "YYYY/MM/DD") & "," & strTfrPackage & "," & strTfrFax & "," & strFinYearEnd & "," & strBlocked & "," & strReg_Number & "," & gblOrgstruct & "," & strAlias
+                End If
+                
+                RStab(Tablepos).rs.MoveNext
+            Loop
+            Close #1
+            RStab(Tablepos).rs.Close
+            RStab(Tablepos).Open = False
+            
+            'NEW====================================
+            'CHECK AUD_SUPPLIER_ADDR AGAIN ***NEW***
+            strSql = "SELECT * FROM AUD_SUPPL_ADDR INNER JOIN SUPPLIER_MAST ON SUM_SUPPL = ASA_CODE "
+            'strSql = strSql & "WHERE ASA_AUD_TYPE IN('INS','UPD') AND ASA_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND SUM_AGENT_CODE LIKE '%" & strAgent & "%'"
+            strSql = strSql & "WHERE ASA_AUD_TYPE IN('INS','UPD') AND ASA_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND SUM_AGENT_CODE LIKE '%" & strAgent & "%'"
+            Tablepos = Open_Table("AUD_SUPPL_ADDR", strSql, adOpenDynamic, adLockOptimistic)
+            Open strPath & "\supplier_amend.csv" For Append As 1
+            Do While RStab(Tablepos).rs.EOF = False
+                
+                strSuppl = GetField(Tablepos, "ASA_CODE")
+                strAddr1 = GetField(Tablepos, "ASA_ADDR1")
+                strAddr1 = Replace(strAddr1, ",", " ")
+                strAddr2 = GetField(Tablepos, "ASA_ADDR2")
+                strAddr2 = Replace(strAddr2, ",", " ")
+                strAddr3 = GetField(Tablepos, "ASA_ADDR3")
+                strAddr3 = Replace(strAddr3, ",", " ")
+                strPcode = GetField(Tablepos, "ASA_PCODE")
+                strTelNo1 = GetField(Tablepos, "ASA_TELNO1")
+                strFaxno = GetField(Tablepos, "ASA_FAXNO")
+                strCellno = GetField(Tablepos, "ASA_CELLNO")
+                strEmail = GetField(Tablepos, "ASA_EMAIL")
+                strFarmName = GetField(Tablepos, "ASA_FARM_NAME")
+                
+                'GET SUPPL NAME
+                strSql = "SELECT SUM_NAME FROM SUPPLIER_MAST WHERE SUM_SUPPL = '" & strSuppl & "'"
+                Tablepos2 = Open_Table("SUPPLIER_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                strSupplName = GetField(Tablepos2, "SUM_NAME")
+                strSupplName = Replace(strSupplName, ",", " ")
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                'CHECK IF THIS IS A DUMMY SUPPLIER
+                strSql = "SELECT DS_SUPPL FROM DUMMY_SUPPL WHERE DS_SUPPL = '" & strSuppl & "'"
+                Tablepos2 = Open_Table("DUMMY_SUPPL", strSql, adOpenDynamic, adLockOptimistic)
+                If GetField(Tablepos2, "DS_SUPPL") = "" Then
+                    strDummy = "N"
+                Else
+                    strDummy = "Y"
+                End If
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                If strDummy <> "Y" Then
+                    'MARKET ADDED BY JD 20140224 -> FOR MOKETSI
+                    Print #1, strSuppl & "," & strSupplName & "," & strAddr1 & "," & strAddr2 & "," & strAddr3 & "," & strPcode & "," & strTelNo1 & "," & strFaxno & "," & strCellno & "," & strEmail & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & gblOrgstruct & "," & strAlias
+                End If
+                
+                RStab(Tablepos).rs.MoveNext
+            Loop
+            Close #1
+            RStab(Tablepos).rs.Close
+            RStab(Tablepos).Open = False
+            
+            '3)DEL TYPE=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+            strSql = "SELECT * FROM AUD_SUPPLIER_MAST INNER JOIN SUPPLIER_MAST ON SUM_SUPPL = ASUM_SUPPL "
+            'strSql = strSql & "WHERE ASUM_AUD_TYPE = 'DEL' AND ASUM_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND SUM_AGENT_CODE LIKE '%" & strAgent & "%' "
+            strSql = strSql & "WHERE ASUM_AUD_TYPE = 'DEL' AND ASUM_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND SUM_AGENT_CODE LIKE '%" & strAgent & "%' "
+            Tablepos = Open_Table("AUD_SUPPLIER_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                        
+            Open strPath & "\supplier_delete.csv" For Output As 1
+            Do While RStab(Tablepos).rs.EOF = False
+                strSuppl = GetField(Tablepos, "ASUM_SUPPL")
+                strSupplName = GetField(Tablepos, "ASUM_NAME")
+                strSupplName = Replace(strSupplName, ",", " ")
+                
+                'CHECK IF THIS IS A DUMMY SUPPLIER
+                strSql = "SELECT DS_SUPPL FROM DUMMY_SUPPL WHERE DS_SUPPL = '" & strSuppl & "'"
+                Tablepos2 = Open_Table("DUMMY_SUPPL", strSql, adOpenDynamic, adLockOptimistic)
+                If GetField(Tablepos2, "DS_SUPPL") = "" Then
+                    strDummy = "N"
+                Else
+                    strDummy = "Y"
+                End If
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                If strDummy <> "Y" Then
+                    Print #1, strSuppl & "," & strSupplName & "," & gblOrgstruct & "," & strAlias
+                End If
+                
+                RStab(Tablepos).rs.MoveNext
+            Loop
+            Close #1
+            RStab(Tablepos).rs.Close
+            RStab(Tablepos).Open = False
+            
+            '\\//
+            '=============================================
+            'U:DELIVERY_AUD;RUN *
+            '=============================================
+            '1) INS TYPE=*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==
+            'strSql = "SELECT * FROM AUD_STK_DETS WHERE ASD_AUD_TYPE = 'INS' AND ASD_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND ASD_AGENT = '" & strAgent & "'"
+            strSql = "SELECT * FROM AUD_STK_DETS WHERE ASD_AUD_TYPE = 'INS' AND ASD_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND ASD_AGENT = '" & strAgent & "'"
+            strSql = strSql & " ORDER BY ASD_AUD_DATE, ASD_AUD_TIME"
+            Tablepos = Open_Table("AUD_STK_DETS", strSql, adOpenDynamic, adLockOptimistic)
+            
+            'Open "C:\legend\proj_fms\export\consign_new.csv" For Output As 1
+            Open strPath & "\consign_new.csv" For Output As 1
+            Do While RStab(Tablepos).rs.EOF = False
+                DoEvents
+                intConsCount = intConsCount + 1
+                intInsCount = intInsCount + 1
+                intCount1 = intCount1 + 1
+                
+                strConsign = GetField(Tablepos, "ASD_CONSIGN")
+                strDelDate = GetField(Tablepos, "ASD_DATE")
+                strDelno = GetField(Tablepos, "ASD_DELNO")
+                strItem = GetField(Tablepos, "ASD_ITEM")
+                strClass = GetField(Tablepos, "ASD_CLASS")
+                strSize = GetField(Tablepos, "ASD_SIZE")
+                strCont = GetField(Tablepos, "ASD_CONT")
+                strContMass = GetField(Tablepos, "ASD_CONTMASS")
+                strProv = GetField(Tablepos, "ASD_PROV")
+                strColour = GetField(Tablepos, "ASD_COLOUR")
+                strCount = GetField(Tablepos, "ASD_COUNT")
+                strMRSREF = GetField(Tablepos, "ASD_MRSREF")
+                strBlock = GetField(Tablepos, "ASD_BLOCK")
+                strComment = GetField(Tablepos, "ASD_COMMENT")
+                strConQty = Val(GetField(Tablepos, "ASD_CONQTY"))
+                strRECQTY = Val(GetField(Tablepos, "ASD_RECQTY"))
+                strSman = GetField(Tablepos, "ASD_SMAN")
+                strDelind = GetField(Tablepos, "ASD_DELIND")
+                strCommp = GetField(Tablepos, "ASD_COMMP")
+                strUPDType = GetField(Tablepos, "ASD_COMM_UPD_TYPE")
+                strCostPrice = GetField(Tablepos, "ASD_COSTP")
+                
+                'NEW FIELDS FOR BACK OFFICE
+                strSection = GetField(Tablepos, "ASD_SECT")
+                strSeq = GetField(Tablepos, "ASD_SEQ")
+                
+                'MRS PRODUCT
+                strSql = "SELECT PR_NDAITEM FROM PRODUCT_MAST WHERE PR_PRODUCT = '" & Left(strItem, 2) & "'"
+                Tablepos2 = Open_Table("PRODUCT_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                strMRSItem = GetField(Tablepos2, "PR_NDAITEM")
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                If strItem = "MRBY" Then strMRSItem = "036"                     'JP24012011
+                If strItem = "ONPB" Then strMRSItem = "005"
+                If strItem = "ONPI" Then strMRSItem = "005"
+                If strItem = "ONPN" Then strMRSItem = "005"
+                If strItem = "ONPM" Then strMRSItem = "005"
+                If strItem = "ONPL" Then strMRSItem = "005"
+                If strItem = "ONPP" Then strMRSItem = "005"
+                If strItem = "ONPR" Then strMRSItem = "005"
+                If strItem = "ONPS" Then strMRSItem = "005"
+                If strItem = "ONPM" Then strMRSItem = "005"
+                If strItem = "ONPL" Then strMRSItem = "005"
+                If strItem = "ONGR" Then strMRSItem = "146"
+                If strItem = "ONSP" Then strMRSItem = "006"
+                If strItem = "TOCT" Then strMRSItem = "144"                 'JP
+                If strItem = "TODR" Then strMRSItem = "125"                 'JP
+                If strItem = "MABY" Then strMRSItem = "036"                 'JP
+                If strItem = "GEGG" Then strMRSItem = "182"                 'JP
+                If strItem = "BCLE" Then strMRSItem = "179"                 'JP
+                If strItem = "BCMI" Then strMRSItem = "192"                 'JP
+                If strItem = "AVCO" Then strMRSItem = "137"                 'JP
+                If strItem = "TUSW" Then strMRSItem = "015"                 'JP
+                If strItem = "MESW" Then strMRSItem = "057"                 'JP
+                If strItem = "MEMU" Then strMRSItem = "056"                 'JP
+                If strItem = "MEMT" Then strMRSItem = "039"                 'JP
+                If strItem = "LTCA" Then strMRSItem = "181"                 'JP
+                If strItem = "LTBU" Then strMRSItem = "148"                 'JP
+                If strItem = "LTBR" Then strMRSItem = "148"                 'JP
+                If strItem = "LTRE" Then strMRSItem = "148"                 'JP
+                If strItem = "LTVS" Then strMRSItem = "184"                 'JP
+                If strItem = "CUCS" Then strMRSItem = "029"                 'JP
+                If strItem = "CUSS" Then strMRSItem = "029"                 'JP
+                If strItem = "CUPL" Then strMRSItem = "029"                 'JP
+                If strItem = "NUAL" Then strMRSItem = "117"                 'JP
+                If strItem = "NUBZ" Then strMRSItem = "200"                 'JP
+                If strItem = "NUCA" Then strMRSItem = "201"                 'JP
+                If strItem = "NUCH" Then strMRSItem = "119"                 'JP
+                If strItem = "NUGR" Then strMRSItem = "149"                 'JP
+                If strItem = "NUHZ" Then strMRSItem = "203"                 'JP
+                If strItem = "NUMA" Then strMRSItem = "140"                 'JP
+                If strItem = "NUOT" Then strMRSItem = "176"                 'JP
+                If strItem = "NUPE" Then strMRSItem = "202"                 'JP
+                If strItem = "NUPC" Then strMRSItem = "138"                 'JP
+                If strItem = "NUPV" Then strMRSItem = "138"                 'JP
+                If strItem = "NUWA" Then strMRSItem = "118"                 'JP
+                If strItem = "BYST" Then strMRSItem = "091"                 'JP
+                If strItem = "BYMU" Then strMRSItem = "092"                 'JP
+                If strItem = "BYBO" Then strMRSItem = "093"                 'JP
+                If strItem = "BYYO" Then strMRSItem = "096"                 'JP
+                If strItem = "BYRA" Then strMRSItem = "136"                 'JP
+                If strItem = "HEDA" Then strMRSItem = "047"                 'JP
+                If strItem = "HEOR" Then strMRSItem = "190"                 'JP
+                If strItem = "HEPA" Then strMRSItem = "189"                 'JP
+                If strItem = "HEPS" Then strMRSItem = "046"                 'JP
+                If strItem = "HEPI" Then strMRSItem = "046"                 'JP
+                If strItem = "HESP" Then strMRSItem = "049"                 'JP
+                If strItem = "HERO" Then strMRSItem = "195"                 'JP
+                If strItem = "HETH" Then strMRSItem = "124"                 'JP
+                If strItem = "HECO" Then strMRSItem = "047"                 'JP
+                If strItem = "HEBA" Then strMRSItem = "186"                 'JP
+                If strItem = "HERK" Then strMRSItem = "196"                 'JP
+                If strItem = "HECH" Then strMRSItem = "197"                 'JP
+                If strItem = "HEHO" Then strMRSItem = "123"                 'JP
+                If strItem = "HECL" Then strMRSItem = "198"                 'JP
+                If strItem = "HEGI" Then strMRSItem = "048"                 'JP
+                If strItem = "HEFE" Then strMRSItem = "145"                 'JP
+                If strItem = "HEFB" Then strMRSItem = "145"                 'JP
+                If strItem = "HEFG" Then strMRSItem = "145"                 'JP
+                If strItem = "HEGC" Then strMRSItem = "197"                 'JP
+                If strItem = "HEPL" Then strMRSItem = "185"                 'JP
+                If strItem = "HEDL" Then strMRSItem = "205"                 'JP
+                If strItem = "HELG" Then strMRSItem = "204"                 'JP
+                If strItem = "HEBU" Then strMRSItem = "206"                 'JP
+                
+                'MRS VARIETY
+                strSql = "SELECT VA_NDAVARIETY FROM VAR_MAST WHERE VA_PRODUCT = '" & Left(strItem, 2) & "' AND VA_VARIETY = '" & Right(strItem, 2) & "'"
+                Tablepos2 = Open_Table("VAR_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                strMRSVar = GetField(Tablepos2, "VA_NDAVARIETY")
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                'MRS SIZE
+                strSql = "SELECT SZ_NDASIZE FROM SIZE_MAST WHERE SZ_SIZE = '" & strSize & "'"
+                Tablepos2 = Open_Table("SIZE_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                strMRSSize = GetField(Tablepos2, "SZ_NDASIZE")
+                If strMRSSize = "" Then strMRSSize = "0"
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                'MRS CLASS
+                strSql = "SELECT CL_NDACLASS FROM CLASS_MAST WHERE CL_CLASS = '" & strClass & "'"
+                Tablepos2 = Open_Table("CLASS_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                strMRSClass = GetField(Tablepos2, "CL_NDACLASS")
+                If strMRSClass = "" Then strMRSClass = "00"
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                strMRSGrade = strMRSClass & strMRSSize
+                
+                'MRS CONT
+                strSql = "SELECT CN_NDACONT FROM CONT_MAST WHERE CN_PRODUCT = '" & Left(strItem, 2) & "' AND CN_VAR = '" & Right(strItem, 2) & "' "
+                strSql = strSql & "AND CN_CONT = '" & strCont & "'"
+                Tablepos2 = Open_Table("CONT_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                strMRSCont = GetField(Tablepos2, "CN_NDACONT")
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                'AUD_PALL_DETS
+                strSql = "SELECT * FROM AUD_PALL_DETS WHERE APD_AUD_TYPE = 'INS' AND APD_AGENT = '" & strAgent & "' AND APD_CONSIGN = '" & strConsign & "' AND APD_DATE = '" & Format(strDelDate, "YYYY/MM/DD") & "' "
+                'strSql = strSql & "AND APD_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "'"
+                strSql = strSql & "AND APD_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "'"
+                Tablepos2 = Open_Table("AUD_PALL_DETS", strSql, adOpenDynamic, adLockOptimistic)
+                Do While RStab(Tablepos2).rs.EOF = False
+                    intPallCount = intPallCount + 1
+                    
+                    If intPallCount = 1 Then
+                        strPall1 = GetField(Tablepos2, "APD_PALL")
+                        intPallQty1 = Val(GetField(Tablepos2, "APD_RECQTY"))
+                    Else
+                        intTotPalls = intTotPalls + Val(GetField(Tablepos2, "APD_RECQTY"))
+                        If intPallCount = 2 Then
+                            strPall2 = GetField(Tablepos2, "APD_PALL")
+                            intPallQty2 = Val(GetField(Tablepos2, "APD_RECQTY"))
+                        Else
+                            strPall2 = "99"
+                            intPallQty2 = intPallQty2 + intTotPalls
+                        End If
+                    End If
+                    RStab(Tablepos2).rs.MoveNext
+                Loop
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                intPallCount = 0
+                strPallQTY1 = Trim(Str(intPallQty1))
+                strPallQTY2 = Trim(Str(intPallQty2))
+                
+                'STK_MAST
+                strSql = "SELECT * FROM STK_MAST WHERE SM_MARKET = '" & gblOrgstruct & "' AND SM_AGENT = '" & strAgent & "' AND SM_DELNO = '" & strDelno & "' AND SM_DDATE = '" & Format(strDelDate, "YYYY/MM/DD") & "'"
+                Tablepos2 = Open_Table("STK_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                strWholesale = GetField(Tablepos2, "SM_DELTYPE")
+                strSuppl = GetField(Tablepos2, "SM_SUPP")
+                strRefno = GetField(Tablepos2, "SM_REFNO")
+                strDelTime = GetField(Tablepos2, "SM_DTIME")
+                strArea = GetField(Tablepos2, "SM_AREA")
+                strWaybill = GetField(Tablepos2, "SM_WAYBILLNO")
+                strTransporter = GetField(Tablepos2, "SM_TRNPTR")
+                strVehicleReg = GetField(Tablepos2, "SM_VREGNO")
+                strMREFNO = GetField(Tablepos2, "SM_MREFNO")
+                strWaybillConf = GetField(Tablepos2, "SM_CONFIRMED")
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                'CHECK IF THIS IS A DUMMY SUPPLIER
+                strSql = "SELECT DS_SUPPL FROM DUMMY_SUPPL WHERE DS_SUPPL = '" & strSuppl & "'"
+                Tablepos2 = Open_Table("DUMMY_SUPPL", strSql, adOpenDynamic, adLockOptimistic)
+                If GetField(Tablepos2, "DS_SUPPL") = "" Then
+                    strDummy = "N"
+                Else
+                    strDummy = "Y"
+                End If
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                If strWholesale = "W" Or strDummy = "Y" Then
+                    intConsCount = intConsCount - 1
+                    intInsCount = intInsCount - 1
+                    intCount1 = intCount1 - 1
+                End If
+                
+                If strWholesale <> "W" And strDummy <> "Y" Then
+                    'REPLACE ANY COMMAS IN THE REFNO
+                    strRefno = Replace(strRefno, ",", "")
+                    strVehicleReg = Replace(strVehicleReg, ",", "")
+                    
+                    strConsEnd = Right(strConsign, 2)
+                    strConsign = Left(strConsign, Len(strConsign) - Len(strConsEnd))
+                    strConsEnd = Right(strConsEnd, 1)
+                    strConsign = strConsign & strConsEnd
+                    
+                    If Trim(strConQty) = "0" Then
+                        strConQty = ""
+                    End If
+                    If Trim(strRECQTY) = "0" Then
+                        strRECQTY = ""
+                    End If
+                    If Trim(strPallQTY1) = "0" Then
+                        strPallQTY1 = ""
+                    End If
+                    If Trim(strPallQTY2) = "0" Then
+                        strPallQTY2 = ""
+                    End If
+                    If Trim(strContMass) = "0" Then
+                        strContMass = ""
+                    End If
+                    If Trim(strCommp) = "0" Then
+                        strCommp = ""
+                    End If
+                    If Trim(strUPDType) = "0" Then
+                        strUPDType = ""
+                    End If
+                    If Trim(strCostPrice) = "0" Then
+                        strCostPrice = ""
+                    End If
+                    
+                    strComment = Replace(strComment, ",", " ")
+                    
+                    'MARKET, SECTION, SEQUENCE ADDED BY JD 20140224 -> FOR MOKETSI 'gblOrgstruct,strSection,STRSEQ
+                    'Print #1, strConsign & "," & strDelno & "," & strAgent & "," & Format(strDelDate, "YYYY/MM/DD") & "," & Format(strDelTime, "HH:MM:SS") & "," & strSuppl & "," & strRefno & "," & strMRSREF & "," & strWaybill & "," & strArea & "," & strSman & "," & Trim(strConQty) & "," & Trim(strRECQTY) & "," & strPall1 & "," & Trim(strPallQTY1) & "," & strPall2 & "," & Trim(strPallQTY2) & "," & strItem & "," & strClass & "," & strSize & "," & strCont & "," & Trim(strContMass) & "," & Trim(strProv) & "," & Trim(strColour) & "," & Trim(strCount) & "," & strBlock & "," & strComment & "," & Trim(strCommp) & "," & Trim(strUPDType) & "," & Trim(strMRSREF) & "," & Trim(strMRSItem) & "," & Trim(strMRSVar) & "," & Trim(strMRSGrade) & "," & Trim(strMRSCont) & "," & gblOrgstruct & "," & strSection & "," & strSeq & "," & strMREFNO & "," & strVehicleReg & "," & strWaybillConf
+                    Print #1, strConsign & "," & strDelno & "," & strAlias & "," & Format(strDelDate, "YYYY/MM/DD") & "," & Format(strDelTime, "HH:MM:SS") & "," & strSuppl & "," & strRefno & "," & strMRSREF & "," & strWaybill & "," & strArea & "," & strSman & "," & Trim(strConQty) & "," & Trim(strRECQTY) & "," & strPall1 & "," & Trim(strPallQTY1) & "," & strPall2 & "," & Trim(strPallQTY2) & "," & strItem & "," & strClass & "," & strSize & "," & strCont & "," & Trim(strContMass) & "," & Trim(strProv) & "," & Trim(strColour) & "," & Trim(strCount) & "," & strBlock & "," & strComment & "," & Trim(strCommp) & "," & Trim(strUPDType) & "," & Trim(strMRSREF) & "," & Trim(strMRSItem) & "," & Trim(strMRSVar) & "," & Trim(strMRSGrade) & "," & Trim(strMRSCont) & "," & gblOrgstruct & "," & strSection & "," & strSeq & "," & strMREFNO & "," & strVehicleReg & "," & strWaybillConf
+                End If
+                
+                strPall1 = ""
+                intPallQty1 = 0
+                strPallQTY1 = ""
+                strPall2 = ""
+                intPallQty2 = 0
+                strPallQTY2 = ""
+                strWholesale = ""
+                
+                RStab(Tablepos).rs.MoveNext
+            Loop
+            Close #1
+            RStab(Tablepos).rs.Close
+            RStab(Tablepos).Open = False
+            
+            'DELIVERY AMENDMENTS NEW==========================================================================================
+            'strSql = "SELECT * FROM AUD_STK_DETS WHERE ASD_AUD_TYPE = 'UPD' AND ASD_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND ASD_AGENT = '" & strAgent & "'"
+            strSql = "SELECT * FROM AUD_STK_DETS WHERE ASD_AUD_TYPE = 'UPD' AND ASD_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND ASD_AGENT = '" & strAgent & "'"
+            strSql = strSql & " ORDER BY ASD_AUD_DATE, ASD_AUD_TIME"
+            Tablepos = Open_Table("AUD_STK_DETS", strSql, adOpenDynamic, adLockOptimistic)
+            
+            Open strPath & "\consign_amend.csv" For Output As 1
+            Do While RStab(Tablepos).rs.EOF = False
+                DoEvents
+                intConsCount = intConsCount + 1
+                IntCount3 = IntCount3 + 1
+                
+                strConsign = GetField(Tablepos, "ASD_CONSIGN")
+                strDelno = GetField(Tablepos, "ASD_DELNO")
+                strItem = GetField(Tablepos, "ASD_ITEM")
+                strClass = GetField(Tablepos, "ASD_CLASS")
+                strSize = GetField(Tablepos, "ASD_SIZE")
+                strCont = GetField(Tablepos, "ASD_CONT")
+                strContMass = GetField(Tablepos, "ASD_CONTMASS")
+                strProv = GetField(Tablepos, "ASD_PROV")
+                strColour = GetField(Tablepos, "ASD_COLOUR")
+                strCount = GetField(Tablepos, "ASD_COUNT")
+                strMRSREF = GetField(Tablepos, "ASD_MRSREF")
+                strBlock = GetField(Tablepos, "ASD_BLOCK")
+                strComment = GetField(Tablepos, "ASD_COMMENT")
+                strConQty = Val(GetField(Tablepos, "ASD_CONQTY"))
+                strRECQTY = Val(GetField(Tablepos, "ASD_RECQTY"))
+                strSman = GetField(Tablepos, "ASD_SMAN")
+                strDelind = GetField(Tablepos, "ASD_DELIND")
+                strCommp = GetField(Tablepos, "ASD_COMMP")
+                strUPDType = GetField(Tablepos, "ASD_COMM_UPD_TYPE")
+                strCostPrice = GetField(Tablepos, "ASD_COSTP")
+                strDelDate = GetField(Tablepos, "ASD_DATE")
+                strAudDate = GetField(Tablepos, "ASD_AUD_DATE")
+                strAudTime = GetField(Tablepos, "ASD_AUD_TIME")
+                
+                'NEW FIELDS FOR BACK OFFICE
+                strSection = GetField(Tablepos, "ASD_SECT")
+                strSeq = GetField(Tablepos, "ASD_SEQ")
+                
+                'MRS PRODUCT
+                strSql = "SELECT PR_NDAITEM FROM PRODUCT_MAST WHERE PR_PRODUCT = '" & Left(strItem, 2) & "'"
+                Tablepos2 = Open_Table("PRODUCT_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                strMRSItem = GetField(Tablepos2, "PR_NDAITEM")
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                If strItem = "MRBY" Then strMRSItem = "036"                 'JP24012011
+                If strItem = "ONPB" Then strMRSItem = "005"                 'JP
+                If strItem = "ONPI" Then strMRSItem = "005"                 'JP
+                If strItem = "ONPN" Then strMRSItem = "005"                 'JP
+                If strItem = "ONPM" Then strMRSItem = "005"                 'JP
+                If strItem = "ONPL" Then strMRSItem = "005"                 'JP
+                If strItem = "ONPP" Then strMRSItem = "005"                 'JP
+                If strItem = "ONPR" Then strMRSItem = "005"                 'JP
+                If strItem = "ONPS" Then strMRSItem = "005"                 'JP
+                If strItem = "ONPM" Then strMRSItem = "005"                 'JP
+                If strItem = "ONPL" Then strMRSItem = "005"                 'JP
+                If strItem = "ONGR" Then strMRSItem = "146"                 'JP
+                If strItem = "ONSP" Then strMRSItem = "006"                 'JP
+                If strItem = "TOCT" Then strMRSItem = "144"                 'JP
+                If strItem = "TODR" Then strMRSItem = "125"                 'JP
+                If strItem = "MABY" Then strMRSItem = "036"                 'JP
+                If strItem = "GEGG" Then strMRSItem = "182"                 'JP
+                If strItem = "BCLE" Then strMRSItem = "179"                 'JP
+                If strItem = "BCMI" Then strMRSItem = "192"                 'JP
+                If strItem = "AVCO" Then strMRSItem = "137"                 'JP
+                If strItem = "TUSW" Then strMRSItem = "015"                 'JP
+                If strItem = "MESW" Then strMRSItem = "057"                 'JP
+                If strItem = "MEMU" Then strMRSItem = "056"                 'JP
+                If strItem = "MEMT" Then strMRSItem = "039"                 'JP
+                If strItem = "LTCA" Then strMRSItem = "181"                 'JP
+                If strItem = "LTBU" Then strMRSItem = "148"                 'JP
+                If strItem = "LTBR" Then strMRSItem = "148"                 'JP
+                If strItem = "LTRE" Then strMRSItem = "148"                 'JP
+                If strItem = "LTVS" Then strMRSItem = "184"                 'JP
+                If strItem = "CUCS" Then strMRSItem = "029"                 'JP
+                If strItem = "CUSS" Then strMRSItem = "029"                 'JP
+                If strItem = "CUPL" Then strMRSItem = "029"                 'JP
+                If strItem = "NUAL" Then strMRSItem = "117"                 'JP
+                If strItem = "NUBZ" Then strMRSItem = "200"                 'JP
+                If strItem = "NUCA" Then strMRSItem = "201"                 'JP
+                If strItem = "NUCH" Then strMRSItem = "119"                 'JP
+                If strItem = "NUGR" Then strMRSItem = "149"                 'JP
+                If strItem = "NUHZ" Then strMRSItem = "203"                 'JP
+                If strItem = "NUMA" Then strMRSItem = "140"                 'JP
+                If strItem = "NUOT" Then strMRSItem = "176"                 'JP
+                If strItem = "NUPE" Then strMRSItem = "202"                 'JP
+                If strItem = "NUPC" Then strMRSItem = "138"                 'JP
+                If strItem = "NUPV" Then strMRSItem = "138"                 'JP
+                If strItem = "NUWA" Then strMRSItem = "118"                 'JP
+                If strItem = "BYST" Then strMRSItem = "091"                 'JP
+                If strItem = "BYMU" Then strMRSItem = "092"                 'JP
+                If strItem = "BYBO" Then strMRSItem = "093"                 'JP
+                If strItem = "BYYO" Then strMRSItem = "096"                 'JP
+                If strItem = "BYRA" Then strMRSItem = "136"                 'JP
+                If strItem = "HEDA" Then strMRSItem = "047"                 'JP
+                If strItem = "HEOR" Then strMRSItem = "190"                 'JP
+                If strItem = "HEPA" Then strMRSItem = "189"                 'JP
+                If strItem = "HEPS" Then strMRSItem = "046"                 'JP
+                If strItem = "HEPI" Then strMRSItem = "046"                 'JP
+                If strItem = "HESP" Then strMRSItem = "049"                 'JP
+                If strItem = "HERO" Then strMRSItem = "195"                 'JP
+                If strItem = "HETH" Then strMRSItem = "124"                 'JP
+                If strItem = "HECO" Then strMRSItem = "047"                 'JP
+                If strItem = "HEBA" Then strMRSItem = "186"                 'JP
+                If strItem = "HERK" Then strMRSItem = "196"                 'JP
+                If strItem = "HECH" Then strMRSItem = "197"                 'JP
+                If strItem = "HEHO" Then strMRSItem = "123"                 'JP
+                If strItem = "HECL" Then strMRSItem = "198"                 'JP
+                If strItem = "HEGI" Then strMRSItem = "048"                 'JP
+                If strItem = "HEFE" Then strMRSItem = "145"                 'JP
+                If strItem = "HEFB" Then strMRSItem = "145"                 'JP
+                If strItem = "HEFG" Then strMRSItem = "145"                 'JP
+                If strItem = "HEGC" Then strMRSItem = "197"                 'JP
+                If strItem = "HEPL" Then strMRSItem = "185"                 'JP
+                If strItem = "HEDL" Then strMRSItem = "205"                 'JP
+                If strItem = "HELG" Then strMRSItem = "204"                 'JP
+                If strItem = "HEBU" Then strMRSItem = "206"                 'JP
+            
+                'MRS VARIETY
+                strSql = "SELECT VA_NDAVARIETY FROM VAR_MAST WHERE VA_PRODUCT = '" & Left(strItem, 2) & "' AND VA_VARIETY = '" & Right(strItem, 2) & "'"
+                Tablepos2 = Open_Table("VAR_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                strMRSVar = GetField(Tablepos2, "VA_NDAVARIETY")
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                'MRS SIZE
+                strSql = "SELECT SZ_NDASIZE FROM SIZE_MAST WHERE SZ_SIZE = '" & strSize & "'"
+                Tablepos2 = Open_Table("SIZE_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                strMRSSize = GetField(Tablepos2, "SZ_NDASIZE")
+                If strMRSSize = "" Then strMRSSize = "0"
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                'MRS CLASS
+                strSql = "SELECT CL_NDACLASS FROM CLASS_MAST WHERE CL_CLASS = '" & strClass & "'"
+                Tablepos2 = Open_Table("CLASS_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                strMRSClass = GetField(Tablepos2, "CL_NDACLASS")
+                If strMRSClass = "" Then strMRSClass = "00"
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                strMRSGrade = strMRSSize & strMRSClass
+                
+                'MRS CONT
+                strSql = "SELECT CN_NDACONT FROM CONT_MAST WHERE CN_PRODUCT = '" & Left(strItem, 2) & "' AND CN_VAR = '" & Right(strItem, 2) & "' "
+                strSql = strSql & "AND CN_CONT = '" & strCont & "'"
+                Tablepos2 = Open_Table("CONT_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                strMRSCont = GetField(Tablepos2, "CN_NDACONT")
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                'SELECT THE SIZE AND CLASS IF ONE IS CHANGED
+                If strSize <> "" Then
+                    If strClass = "" Then
+                        strSql = "SELECT SD_CLASS FROM STK_DETS WHERE SD_MARKET = '" & gblOrgstruct & "' AND SD_AGENT = '" & strAgent & "' AND SD_CONSIGN = '" & strConsign & "' AND SD_DATE = '" & Format(strDelDate, "YYYY/MM/DD") & "'"
+                        Tablepos2 = Open_Table("STK_DETS", strSql, adOpenDynamic, adLockOptimistic)
+                        strClass = GetField(Tablepos2, "SD_CLASS")
+                        RStab(Tablepos2).rs.Close
+                        RStab(Tablepos2).Open = False
+                    End If
+                Else
+                    If strClass <> "" Then
+                        strSql = "SELECT SD_SIZE FROM STK_DETS WHERE SD_MARKET = '" & gblOrgstruct & "' AND SD_AGENT = '" & strAgent & "' AND SD_CONSIGN = '" & strConsign & "' AND SD_DATE = '" & Format(strDelDate, "YYYY/MM/DD") & "'"
+                        Tablepos2 = Open_Table("STK_DETS", strSql, adOpenDynamic, adLockOptimistic)
+                        strSize = GetField(Tablepos2, "SD_SIZE")
+                        RStab(Tablepos2).rs.Close
+                        RStab(Tablepos2).Open = False
+                    End If
+                End If
+                
+                Dim dubLiveCommPerc As Double
+                
+                'SELECT THE FULL COMMODITY
+                strSql = "SELECT SD_DELIND,SD_ITEM,SD_CLASS,SD_SIZE,SD_CONT,SD_CONTMASS,SD_COMMP FROM STK_DETS WHERE SD_AGENT = '" & strAgent & "' AND SD_CONSIGN = '" & strConsign & "' AND SD_DATE = '" & Format(strDelDate, "YYYY/MM/DD") & "'"
+                Tablepos2 = Open_Table("STK_DETS", strSql, adOpenDynamic, adLockOptimistic)
+                strConsDeleted = GetField(Tablepos2, "SD_DELIND")
+                strItem = GetField(Tablepos2, "SD_ITEM")
+                strClass = GetField(Tablepos2, "SD_CLASS")
+                strSize = GetField(Tablepos2, "SD_SIZE")
+                strCont = GetField(Tablepos2, "SD_CONT")
+                strContMass = GetField(Tablepos2, "SD_CONTMASS")
+                dubLiveCommPerc = Val(GetField(Tablepos2, "SD_COMMP"))
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                'AUD_PALL_DETS
+                strSql = "SELECT * FROM AUD_PALL_DETS WHERE APD_AUD_TYPE = 'UPD' AND APD_AGENT = '" & strAgent & "' AND APD_CONSIGN = '" & strConsign & "' "
+                'strSql = strSql & "AND APD_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "'"
+                strSql = strSql & "AND APD_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "'"
+                Tablepos2 = Open_Table("AUD_PALL_DETS", strSql, adOpenDynamic, adLockOptimistic)
+                Do While RStab(Tablepos2).rs.EOF = False
+                    intPallCount = intPallCount + 1
+                    
+                    If intPallCount = 1 Then
+                        strPall1 = GetField(Tablepos2, "APD_PALL")
+                        intPallQty1 = Val(GetField(Tablepos2, "APD_RECQTY"))
+                    Else
+                        intTotPalls = intTotPalls + Val(GetField(Tablepos2, "APD_RECQTY"))
+                        If intPallCount = 2 Then
+                            strPall2 = GetField(Tablepos2, "APD_PALL")
+                            intPallQty2 = Val(GetField(Tablepos2, "APD_RECQTY"))
+                        Else
+                            strPall2 = "99"
+                            intPallQty2 = intPallQty2 + intTotPalls
+                        End If
+                    End If
+                    RStab(Tablepos2).rs.MoveNext
+                Loop
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                intPallCount = 0
+                
+                strPallQTY1 = Trim(Str(intPallQty1))
+                strPallQTY2 = Trim(Str(intPallQty2))
+                
+                'AUD_STK_MAST
+                'strSql = "SELECT * FROM AUD_STK_MAST WHERE ASM_AUD_TYPE = 'UPD' AND ASM_DELNO = '" & strDelno & "' AND ASM_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND ASM_AGENT = '" & strAgent & "'"
+                strSql = "SELECT * FROM AUD_STK_MAST WHERE ASM_AUD_TYPE = 'UPD' AND ASM_DELNO = '" & strDelno & "' AND ASM_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND ASM_AGENT = '" & strAgent & "'"
+                Tablepos3 = Open_Table("AUD_STK_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                strSuppl = GetField(Tablepos3, "ASM_SUPP")
+                strRefno = GetField(Tablepos3, "ASM_REFNO")
+                strDelTime = GetField(Tablepos3, "ASM_DTIME")
+                strArea = GetField(Tablepos3, "ASM_AREA")
+                strWaybill = GetField(Tablepos3, "ASM_WAYBILLNO")
+                strTransporter = GetField(Tablepos3, "ASM_TRNPTR")
+                strVehicleReg = GetField(Tablepos3, "ASM_VREGNO")
+                strWaybillConf = GetField(Tablepos3, "ASM_CONFIRMED")
+                RStab(Tablepos3).rs.Close
+                RStab(Tablepos3).Open = False
+                
+                '======================
+                'DUMMY SUPPLIER CHECKS
+                '======================
+                'WHOLESALE CHECK
+                strSql = "SELECT SM_DELTYPE,SM_SUPP,SM_MREFNO FROM STK_MAST WHERE SM_MARKET = '" & gblOrgstruct & "' AND SM_AGENT = '" & strAgent & "' AND "
+                strSql = strSql & "SM_DELNO = '" & strDelno & "' AND SM_DDATE = '" & Format(strDelDate, "YYYY/MM/DD") & "'"
+                Tablepos2 = Open_Table("STK_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                strWholesale = GetField(Tablepos2, "SM_DELTYPE")
+                strCheckSuppl = GetField(Tablepos2, "SM_SUPP")
+                strMREFNO = GetField(Tablepos2, "SM_MREFNO")
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                'CHECK IF THE SUPPLIER IS A DUMMY, IF SO DONT SEND RECORD
+                strSql = "SELECT DS_SUPPL FROM DUMMY_SUPPL WHERE DS_SUPPL = '" & strSuppl & "'"
+                Tablepos2 = Open_Table("DUMMY_SUPPL", strSql, adOpenDynamic, adLockOptimistic)
+                If RStab(Tablepos2).rs.EOF = False Then
+                    strDummy = "Y"
+                Else
+                    strDummy = "N"
+                End If
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                If strWholesale = "W" Or strDummy = "Y" Or strConsDeleted = "Y" Then
+                    intConsCount = intConsCount - 1
+                    IntCount3 = IntCount3 - 1
+                End If
+                
+                If strWholesale <> "W" And strDummy <> "Y" And strConsDeleted <> "Y" Then
+                    'REPLACE ANY COMMAS IN THE REFNO
+                    strRefno = Replace(strRefno, ",", "")
+                    
+                    strConsEnd = Right(strConsign, 2)
+                    strConsign = Left(strConsign, Len(strConsign) - Len(strConsEnd))
+                    strConsEnd = Right(strConsEnd, 1)
+                    strConsign = strConsign & strConsEnd
+                    
+                    If Trim(strConQty) = "0" Then
+                        strConQty = ""
+                    End If
+                    If Trim(strRECQTY) = "0" Then
+                        strRECQTY = ""
+                    End If
+                    If Trim(strPallQTY1) = "0" Then
+                        strPallQTY1 = ""
+                    End If
+                    If Trim(strPallQTY2) = "0" Then
+                        strPallQTY2 = ""
+                    End If
+                    If Trim(strContMass) = "0" Then
+                        strContMass = ""
+                    End If
+                    If Trim(strCommp) = "0" Then
+                        If dubLiveCommPerc <> 0 Then
+                            strCommp = ""
+                        Else
+                            strCommp = "0"
+                        End If
+                    End If
+                    If Trim(strUPDType) = "0" Then
+                        strUPDType = ""
+                    End If
+                    If Trim(strCostPrice) = "0" Then
+                        strCostPrice = ""
+                    End If
+                    
+                    strComment = Replace(strComment, ",", " ")
+                    strVehicleReg = Replace(strVehicleReg, ",", "")
+                    
+                    'Print #1, strConsign & "," & strDelno & "," & strAgent & "," & Format(strDelDate, "YYYY/MM/DD") & "," & Format(strDelTime, "HH:MM:SS") & "," & strSuppl & "," & strRefno & "," & strMRSREF & "," & strWaybill & "," & strArea & "," & strSman & "," & Trim(strConQty) & "," & Trim(strRECQTY) & "," & strPall1 & "," & Trim(strPallQTY1) & "," & strPall2 & "," & Trim(strPallQTY2) & "," & strItem & "," & strClass & "," & strSize & "," & strCont & "," & Trim(strContMass) & "," & strProv & "," & strColour & "," & Trim(strCount) & "," & strBlock & "," & strComment & "," & Trim(strCommp) & "," & Trim(strUPDType) & ",," & strMRSItem & "," & strMRSVar & "," & Trim(strMRSGrade) & "," & Trim(strMRSCont) & "," & Format(strAudDate, "YYYY/MM/DD") & "," & Format(strAudTime, "HH:MM:SS") & "," & gblOrgstruct & "," & strSection & "," & strSeq & "," & strMREFNO & "," & strVehicleReg & "," & strWaybillConf
+                    Print #1, strConsign & "," & strDelno & "," & strAlias & "," & Format(strDelDate, "YYYY/MM/DD") & "," & Format(strDelTime, "HH:MM:SS") & "," & strSuppl & "," & strRefno & "," & strMRSREF & "," & strWaybill & "," & strArea & "," & strSman & "," & Trim(strConQty) & "," & Trim(strRECQTY) & "," & strPall1 & "," & Trim(strPallQTY1) & "," & strPall2 & "," & Trim(strPallQTY2) & "," & strItem & "," & strClass & "," & strSize & "," & strCont & "," & Trim(strContMass) & "," & strProv & "," & strColour & "," & Trim(strCount) & "," & strBlock & "," & strComment & "," & Trim(strCommp) & "," & Trim(strUPDType) & ",," & strMRSItem & "," & strMRSVar & "," & Trim(strMRSGrade) & "," & Trim(strMRSCont) & "," & Format(strAudDate, "YYYY/MM/DD") & "," & Format(strAudTime, "HH:MM:SS") & "," & gblOrgstruct & "," & strSection & "," & strSeq & "," & strMREFNO & "," & strVehicleReg & "," & strWaybillConf
+                End If
+                
+                strPall1 = ""
+                intPallQty1 = 0
+                strPallQTY1 = ""
+                strPall2 = ""
+                intPallQty2 = 0
+                strPallQTY2 = ""
+                strWholesale = ""
+                
+                RStab(Tablepos).rs.MoveNext
+            Loop
+            
+            'Close #1
+            RStab(Tablepos).rs.Close
+            RStab(Tablepos).Open = False
+            
+            '========
+            'NEW TEST
+            '========
+            'strSql = "SELECT * FROM AUD_STK_MAST WHERE ASM_MARKET = '" & gblOrgstruct & "' AND ASM_AUD_TYPE = 'UPD' AND ASM_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND ASM_AGENT = '" & strAgent & "'"
+            strSql = "SELECT * FROM AUD_STK_MAST WHERE ASM_MARKET = '" & gblOrgstruct & "' AND ASM_AUD_TYPE = 'UPD' AND ASM_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND ASM_AGENT = '" & strAgent & "'"
+            Tablepos = Open_Table("AUD_STK_MAST", strSql, adOpenDynamic, adLockOptimistic)
+            Do While RStab(Tablepos).rs.EOF = False
+                DoEvents
+                'intCount3 = intCount3 + 1
+                strSuppl = GetField(Tablepos, "ASM_SUPP")
+                strRefno = GetField(Tablepos, "ASM_REFNO")
+                strDelTime = GetField(Tablepos, "ASM_DTIME")
+                strArea = GetField(Tablepos, "ASM_AREA")
+                strWaybill = GetField(Tablepos, "ASM_WAYBILLNO")
+                strTransporter = GetField(Tablepos, "ASM_TRNPTR")
+                strVehicleReg = GetField(Tablepos, "ASM_VREGNO")
+                strDelDate = GetField(Tablepos, "ASM_DDATE")
+                strDelno = GetField(Tablepos, "ASM_DELNO")
+                strMarket = GetField(Tablepos, "ASM_MARKET")
+                strAudDate = GetField(Tablepos, "ASM_AUD_DATE")
+                strAudTime = GetField(Tablepos, "ASM_AUD_TIME")
+                'NEW FIELDS FOR BACK OFFICE
+                strSection = GetField(Tablepos, "ASD_SECT")
+                strSeq = GetField(Tablepos, "ASD_SEQ")
+                strWaybillConf = GetField(Tablepos, "ASM_CONFIRMED")
+                'REPLACE ANY COMMAS IN THE REFNO
+                strRefno = Replace(strRefno, ",", "")
+                strMREFNO = Replace(strMREFNO, ",", "")
+                
+                'WHOLESALE CHECK
+                strSql = "SELECT SM_DELTYPE,SM_REFNO,SM_MREFNO FROM STK_MAST WHERE SM_AGENT = '" & strAgent & "' AND "
+                strSql = strSql & "SM_DELNO = '" & strDelno & "' AND SM_DDATE = '" & Format(strDelDate, "YYYY/MM/DD") & "' " 'AND ISNULL(SM_FINPDTE)"
+                Tablepos2 = Open_Table("STK_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                strWholesale = GetField(Tablepos2, "SM_DELTYPE")
+                strMREFNO = GetField(Tablepos, "SM_MREFNO")
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                'CHECK IF THE SUPPLIER IS A DUMMY, IF SO DONT SEND RECORD
+                strSql = "SELECT DS_SUPPL FROM DUMMY_SUPPL WHERE DS_SUPPL = '" & strSuppl & "'"
+                Tablepos2 = Open_Table("DUMMY_SUPPL", strSql, adOpenDynamic, adLockOptimistic)
+                If RStab(Tablepos2).rs.EOF = False Then
+                    strDummy = "Y"
+                Else
+                    strDummy = "N"
+                End If
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                If strWholesale = "W" Or strDummy = "Y" Then
+                    Debug.Print
+                    'IntCount3 = IntCount3 - 1
+                End If
+                
+                If strWholesale <> "W" And strDummy <> "Y" Then
+                    'GET THE AUD_STK_DETS FIELD
+                    strSql = "SELECT * FROM STK_DETS WHERE SD_MARKET = '" & strMarket & "' AND SD_AGENT = '" & strAgent & "' AND SD_DELNO = '" & strDelno & "' AND SD_DATE = '" & Format(strDelDate, "YYYY/MM/DD") & "'"
+                    Tablepos2 = Open_Table("STK_DETS", strSql, adOpenDynamic, adLockOptimistic)
+                    Do While RStab(Tablepos2).rs.EOF = False
+                        IntCount3 = IntCount3 + 1
+                        strConsign = GetField(Tablepos2, "SD_CONSIGN")
+                        
+                        strConsEnd = Right(strConsign, 2)
+                        strConsign = Left(strConsign, Len(strConsign) - Len(strConsEnd))
+                        strConsEnd = Right(strConsEnd, 1)
+                        strConsign = strConsign & strConsEnd
+                        strVehicleReg = Replace(strVehicleReg, ",", "")
+                        
+                        'Print #1, strConsign & "," & strDelno & "," & strAgent & "," & Format(strDelDate, "YYYY/MM/DD") & "," & Format(strDelTime, "HH:MM:SS") & "," & strSuppl & "," & strRefno & "," & strMRSREF & "," & strWaybill & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & Format(strAudDate, "YYYY/MM/DD") & "," & Format(strAudTime, "HH:MM:SS") & "," & gblOrgstruct & "," & strSection & "," & strSeq & "," & strMREFNO & "," & strVehicleReg & "," & strWaybillConf
+                        Print #1, strConsign & "," & strDelno & "," & strAlias & "," & Format(strDelDate, "YYYY/MM/DD") & "," & Format(strDelTime, "HH:MM:SS") & "," & strSuppl & "," & strRefno & "," & strMRSREF & "," & strWaybill & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & "," & Format(strAudDate, "YYYY/MM/DD") & "," & Format(strAudTime, "HH:MM:SS") & "," & gblOrgstruct & "," & strSection & "," & strSeq & "," & strMREFNO & "," & strVehicleReg & "," & strWaybillConf
+                        
+                        RStab(Tablepos2).rs.MoveNext
+                    Loop
+                    RStab(Tablepos2).rs.Close
+                    RStab(Tablepos2).Open = False
+                End If
+                
+                strWholesale = ""
+                RStab(Tablepos).rs.MoveNext
+            Loop
+            RStab(Tablepos).rs.Close
+            RStab(Tablepos).Open = False
+            '=========
+            '/NEW TEST
+            '=========
+            Close #1
+            
+            '3) DEL TYPE=*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==
+            'strSql = "SELECT * FROM AUD_STK_DETS WHERE ASD_AUD_TYPE = 'DEL' AND ASD_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND ASD_AGENT = '" & strAgent & "'"
+            strSql = "SELECT * FROM AUD_STK_DETS WHERE ASD_AUD_TYPE = 'DEL' AND ASD_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND ASD_AGENT = '" & strAgent & "'"
+            Tablepos = Open_Table("AUD_STK_DETS", strSql, adOpenDynamic, adLockOptimistic)
+            
+            'Open "C:\legend\proj_fms\export\consign_delete.csv" For Output As 1
+            Open strPath & "\consign_delete.csv" For Output As 1
+            Do While RStab(Tablepos).rs.EOF = False
+                intDelCount = intDelCount + 1
+                IntCount4 = IntCount4 + 1
+                strConsign = GetField(Tablepos, "ASD_CONSIGN")
+                strDelDate = GetField(Tablepos, "ASD_DATE")
+                strDelno = GetField(Tablepos, "ASD_DELNO")
+                
+                'NEW FIELDS FOR BACK OFFICE
+                strSection = GetField(Tablepos, "ASD_SECT")
+                strSeq = GetField(Tablepos, "ASD_SEQ")
+                
+                'STK_MAST
+                strSql = "SELECT SM_SUPP, SM_REFNO, SM_DTIME ,SM_DELTYPE, SM_MREFNO FROM STK_MAST WHERE SM_AGENT = '" & strAgent & "' AND SM_DELNO = '" & strDelno & "' AND SM_DDATE = '" & Format(strDelDate, "YYYY/MM/DD") & "'"
+                Tablepos2 = Open_Table("STK_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                strWholesale = GetField(Tablepos2, "SM_DELTYPE")
+                strSuppl = GetField(Tablepos2, "SM_SUPP")
+                strRefno = GetField(Tablepos2, "SM_REFNO")
+                strDelTime = GetField(Tablepos2, "SM_DTIME")
+                strMREFNO = GetField(Tablepos2, "SM_MREFNO")
+                strVehicleReg = ""
+                strWaybillConf = ""
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                'REPLACE ANY COMMAS IN THE REFNO
+                strRefno = Replace(strRefno, ",", "")
+                
+                strConsEnd = Right(strConsign, 2)
+                strConsign = Left(strConsign, Len(strConsign) - Len(strConsEnd))
+                strConsEnd = Right(strConsEnd, 1)
+                strConsign = strConsign & strConsEnd
+                
+                'CHECK IF THE SUPPLIER IS A DUMMY, IF SO DONT SEND RECORD
+                strSql = "SELECT DS_SUPPL FROM DUMMY_SUPPL WHERE DS_SUPPL = '" & strSuppl & "'"
+                Tablepos2 = Open_Table("DUMMY_SUPPL", strSql, adOpenDynamic, adLockOptimistic)
+                If RStab(Tablepos2).rs.EOF = False Then
+                    strDummy = "Y"
+                Else
+                    strDummy = "N"
+                End If
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                If strWholesale = "W" Or strDummy = "Y" Then
+                    intDelCount = intDelCount - 1
+                    IntCount4 = IntCount4 - 1
+                End If
+                If strWholesale <> "W" And strDummy <> "Y" Then
+                    Print #1, strConsign & "," & strDelno & "," & strAlias & "," & Format(strDelDate, "YYYY/MM/DD") & "," & Format(strDelTime, "HH:MM:SS") & "," & strSuppl & "," & strRefno & "," & gblOrgstruct & "," & strSection & "," & strSeq & "," & strMREFNO & ",,"
+                    'Print #1, strConsign & "," & strDelno & "," & strAgent & "," & Format(strDelDate, "YYYY/MM/DD") & "," & Format(strDelTime, "HH:MM:SS") & "," & strSuppl & "," & strRefno & "," & gblOrgstruct & "," & strSection & "," & strSeq & "," & strMREFNO & ",,"
+                End If
+                strWholesale = ""
+                RStab(Tablepos).rs.MoveNext
+            Loop
+            
+            Close #1
+            RStab(Tablepos).rs.Close
+            RStab(Tablepos).Open = False
+            
+            strSql = "SELECT SD_DELNO, SD_CONSIGN, SD_AGENT, SD_DATE, SD_RECQTY, SD_SLDQTY, SD_DISQTY, SD_ADJQTY, SD_RETQTY, SD_PROVQTY "
+            strSql = strSql & "FROM STK_DETS WHERE ISNULL(SD_CDATE) AND SD_RECQTY - SD_SLDQTY - SD_DISQTY - SD_ADJQTY - SD_RETQTY - SD_PROVQTY > 0 AND SD_DELIND <> 'Y' AND SD_AGENT = '" & strAgent & "'"
+            Tablepos = Open_Table("STK_DETS", strSql, adOpenDynamic, adLockOptimistic)
+            
+            Open strPath & "\consign_avail.csv" For Output As 1
+            Do While RStab(Tablepos).rs.EOF = False
+                DoEvents
+                strDelno = GetField(Tablepos, "SD_DELNO")
+                strConsign = GetField(Tablepos, "SD_CONSIGN")
+                strDelDate = GetField(Tablepos, "SD_DATE")
+                intAvailQty = Val(GetField(Tablepos, "SD_RECQTY")) - Val(GetField(Tablepos, "SD_SLDQTY")) - Val(GetField(Tablepos, "SD_DISQTY")) - Val(GetField(Tablepos, "SD_ADJQTY")) - Val(GetField(Tablepos, "SD_RETQTY")) - Val(GetField(Tablepos, "SD_PROVQTY"))
+                intTotAvailQty = intTotAvailQty + intAvailQty
+                
+                strSql = "SELECT SM_DTIME, SM_SUPP, SM_REFNO, SM_DELTYPE, SM_MREFNO FROM STK_MAST WHERE SM_MARKET = '" & gblOrgstruct & "' AND SM_DELNO = '" & strDelno & "' AND SM_AGENT = '" & strAgent & "' AND SM_DDATE = '" & Format(strDelDate, "YYYY/MM/DD") & "'"
+                Tablepos2 = Open_Table("STK_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                strWholesale = GetField(Tablepos2, "SM_DELTYPE")
+                strDelTime = GetField(Tablepos2, "SM_DTIME")
+                strSuppl = GetField(Tablepos2, "SM_SUPP")
+                strRefno = GetField(Tablepos2, "SM_REFNO")
+                strMREFNO = GetField(Tablepos2, "SM_MREFNO")
+                strVehicleReg = ""
+                strWaybillConf = ""
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                'REPLACE ANY COMMAS IN THE REFNO
+                strRefno = Replace(strRefno, ",", "")
+                
+                strConsEnd = Right(strConsign, 2)
+                strConsign = Left(strConsign, Len(strConsign) - Len(strConsEnd))
+                strConsEnd = Right(strConsEnd, 1)
+                strConsign = strConsign & strConsEnd
+                
+                If strWholesale = "W" Then
+                    intTotAvailQty = intTotAvailQty - intAvailQty
+                End If
+                If strWholesale <> "W" Then
+                    Print #1, strConsign & "," & strDelno & "," & strAlias & "," & Format(strDelDate, "YYYY/MM/DD") & "," & Format(strDelTime, "HH:MM:SS") & "," & strSuppl & "," & strRefno & "," & Trim(Str(intAvailQty)) & "," & gblOrgstruct & "," & strSection & "," & strSeq & "," & strMREFNO & ",,"
+                    'Print #1, strConsign & "," & strDelno & "," & strAgent & "," & Format(strDelDate, "YYYY/MM/DD") & "," & Format(strDelTime, "HH:MM:SS") & "," & strSuppl & "," & strRefno & "," & Trim(Str(intAvailQty)) & "," & gblOrgstruct & "," & strSection & "," & strSeq & "," & strMREFNO & ",,"
+                End If
+                RStab(Tablepos).rs.MoveNext
+            Loop
+            Close #1
+            RStab(Tablepos).rs.Close
+            RStab(Tablepos).Open = False
+            
+            'GENERATE THE STATUS FILE
+            strSql = "SELECT SD_CONSIGN,SD_AGENT,SD_DATE,SD_MARKET,SD_HPRICE,SD_LPRICE,SD_CDATE,SD_SLDQTY,SD_TOTSLS,SD_TOTVAT,SD_TOTDUES,SD_TOTDUESV,SD_TOTCOM,SD_COMMP_VAT,SD_TOTLEVY,SD_TOTLEVYV,SD_DISQTY,SD_CSQTY "
+            strSql = strSql & "FROM STK_DETS INNER JOIN STK_MAST ON SM_MARKET = SD_MARKET AND SM_AGENT = SD_AGENT AND SM_DELNO = SD_DELNO AND SM_DDATE = SD_DATE "
+            strSql = strSql & "WHERE SD_MARKET = '" & gblOrgstruct & "' AND SM_FINPDTE IS NULL AND SD_AGENT = '" & strAgent & "'"
+            Tablepos = Open_Table("STK_DETS", strSql, adOpenDynamic, adLockOptimistic)
+            Open strPath & "\consign_status.csv" For Output As 1
+            Do While RStab(Tablepos).rs.EOF = False
+                DoEvents
+                strMarket = GetField(Tablepos, "SD_MARKET")
+                strConsign = GetField(Tablepos, "SD_CONSIGN")
+                strDelDate = Format(GetField(Tablepos, "SD_DATE"), "YYYY/MM/DD")
+                strCDate = Format(GetField(Tablepos, "SD_CDATE"), "YYYY/MM/DD")
+                
+                dubHPrice = Val(GetField(Tablepos, "SD_HPRICE"))
+                dubLPrice = Val(GetField(Tablepos, "SD_LPRICE"))
+                dubSls = Val(GetField(Tablepos, "SD_TOTSLS"))
+                dubVat = Val(GetField(Tablepos, "SD_TOTVAT"))
+                dubDues = Val(GetField(Tablepos, "SD_TOTDUES"))
+                dubDuesV = Val(GetField(Tablepos, "SD_TOTDUESV"))
+                dubComm = Val(GetField(Tablepos, "SD_TOTCOM"))
+                dubCommV = Val(GetField(Tablepos, "SD_COMMP_VAT"))
+                dubLevy = Val(GetField(Tablepos, "SD_TOTLEVY"))
+                dubLevyV = Val(GetField(Tablepos, "SD_TOTLEVYV"))
+                
+                lngSldQty = Val(GetField(Tablepos, "SD_SLDQTY"))
+                lngDisQty = Val(GetField(Tablepos, "SD_DISQTY"))
+                lngCSQTY = Val(GetField(Tablepos, "SD_CSQTY"))
+                
+                Print #1, strConsign & "," & strAlias & "," & strDelDate & "," & strMarket & "," & Trim(Str(dubHPrice)) & "," & Trim(Str(dubLPrice)) & "," & strCDate & "," & Trim(Str(lngSldQty)) & "," & Trim(Str(dubSls)) & "," & Trim(Str(dubVat)) & "," & Trim(Str(dubDues)) & "," & Trim(Str(dubDuesV)) & "," & Trim(Str(dubComm)) & "," & Trim(Str(dubCommV)) & "," & Trim(Str(dubLevy)) & "," & Trim(Str(dubLevyV)) & "," & Trim(Str(lngDisQty)) & "," & Trim(Str(lngCSQTY))
+                'Print #1, strConsign & "," & strAgent & "," & strDelDate & "," & strMarket & "," & Trim(Str(dubHPrice)) & "," & Trim(Str(dubLPrice)) & "," & strCDate & "," & Trim(Str(lngSldQty)) & "," & Trim(Str(dubSls)) & "," & Trim(Str(dubVat)) & "," & Trim(Str(dubDues)) & "," & Trim(Str(dubDuesV)) & "," & Trim(Str(dubComm)) & "," & Trim(Str(dubCommV)) & "," & Trim(Str(dubLevy)) & "," & Trim(Str(dubLevyV)) & "," & Trim(Str(lngDisQty)) & "," & Trim(Str(lngCSQTY))
+                
+                RStab(Tablepos).rs.MoveNext
+            Loop
+            
+            Close #1
+            RStab(Tablepos).rs.Close
+            RStab(Tablepos).Open = False
+            
+            '\\//
+            'U:SALES_CSV_STK_TRANS;SALES_CSV *
+            strDate = Format(Now, "YYYY/MM/DD")
+            strTime = Format(Now, "HH:MM:SS")
+            intPallCount = 0
+            intConsCount = 0
+            intTotPalls = 0
+            cuTotPallVat = 0
+            cuTotPallValue = 0
+            cuTotalValue = 0
+            
+            strSql = "SELECT * FROM STK_TRANS WHERE ST_PAID = 'Y' AND (ST_TRTYPE = 'SA' OR ST_TRTYPE = 'DE' OR ST_TRTYPE = 'DT' ) "
+            'strSql = strSql & "AND ST_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND ST_AGENT = '" & strAgent & "' ORDER BY ST_CONSIGN,ST_DOCNO"   'JD20090212
+            strSql = strSql & "AND ST_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND ST_AGENT = '" & strAgent & "' ORDER BY ST_CONSIGN,ST_DOCNO"   'JD20090212
+            Tablepos = Open_Table("STK_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+            
+            If RStab(Tablepos).rs.EOF = False Then
+                Open strPath & "\sales.csv" For Output As 1
+                Open strPath & "\charges.csv" For Output As 2
+            End If
+            intRecCount = 0
+            Do While RStab(Tablepos).rs.EOF = False
+                intConsCount = intConsCount + 1
+                strMarket = GetField(Tablepos, "ST_MARKET")
+                DoEvents
+                strConsign = GetField(Tablepos, "ST_CONSIGN")
+                strDocNo = GetField(Tablepos, "ST_DOCNO")
+                strTrans = GetField(Tablepos, "ST_TRANS")
+                strType = GetField(Tablepos, "ST_TRTYPE")
+                strDebtor = GetField(Tablepos, "ST_DEBTOR")
+                strSman = GetField(Tablepos, "ST_SMAN")
+                strTrQty = GetField(Tablepos, "ST_TRQTY")
+                cuTRPRICE = Val(GetField(Tablepos, "ST_TRPRICE"))
+                cuVat = Val(GetField(Tablepos, "ST_TRVAT"))
+                strTRDATE = GetField(Tablepos, "ST_TRDTE")
+                strTRTIME = GetField(Tablepos, "ST_TRTIME")
+                strCASHP = GetField(Tablepos, "ST_CASHP")
+                strCashier = GetField(Tablepos, "ST_CASHIER")
+                strInv = GetField(Tablepos, "ST_TAXINV")
+                strRECNO = GetField(Tablepos, "ST_RECNO")
+                strReasonCode = GetField(Tablepos, "ST_RSN_CODE")
+                strDelDate = GetField(Tablepos, "ST_DELDATE")
+                strDDT = Format(strDelDate, "YYYY/MM/DD")
+                
+                strProvSale = GetField(Tablepos, "ST_PSSTAT")
+                strDelind = GetField(Tablepos, "ST_DELIND")
+                DI = strDelind
+                
+                'NEW FIELDS FORM MOKETSI INTERFACE - JD 20140220
+                strHigh = GetField(Tablepos, "ST_HIGH")
+                strLow = GetField(Tablepos, "ST_LOW")
+                strAverage = GetField(Tablepos, "ST_AVERAGE")
+                strTransNo = GetField(Tablepos, "ST_TRANS")
+                strUpdDate = Format(Now, "YYYY/MM/DD")
+                strUpdTime = Format(Now, "HH:MM:SS")
+                UTime = strUpdTime
+                UDate = strUpdDate
+                strPSC = GetField(Tablepos, "ST_PROD_SECT")
+                
+                'If strProvSale = "Y" Then strProvSale = "PS"
+                If strProvSale = "V" Then strProvSale = "PS"
+                
+                'LOOK UP THE ORIGINAL DOCUMENT NUMBER
+                If strProvSale = "PS" Then
+                    strSql = "SELECT ST_DOCNO FROM STK_TRANS WHERE ST_MARKET = '" & gblOrgstruct & "' AND ST_AGENT = '" & strAgent & "' AND "
+                    strSql = strSql & "ST_CONSIGN = '" & strConsign & "' AND ST_DELDATE = '" & Format(strDelDate, "YYYY/MM/DD") & "' AND "
+                    strSql = strSql & "ST_MAN_DOCNO = '" & strDocNo & "' AND ST_TRTYPE = 'PS' "
+                    Tablepos1 = Open_Table("DEBTOR_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                    PSD = GetField(Tablepos1, "ST_DOCNO")
+                    RStab(Tablepos1).rs.Close
+                    RStab(Tablepos1).Open = False
+                Else
+                    PSD = ""
+                End If
+            
+                If strAgent = "WS" Then strWS = "W" Else strWS = ""
+                
+                'JD NEW LOOKUP ADDED ON 2012-07-23 ON DOT'S REQUEST - TO ONLY SEND MAIN BUYERS INSTEAD OF SUB BUYERS
+                strSql = "SELECT DM_MAIN_DEBTOR FROM DEBTOR_MAST WHERE DM_MARKET = '" & gblOrgstruct & "' AND DM_DEBTOR = '" & strDebtor & "'"
+                Tablepos1 = Open_Table("DEBTOR_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                If GetField(Tablepos1, "DM_MAIN_DEBTOR") <> "" Then
+                    strSubDebtor = strDebtor
+                    strDebtor = GetField(Tablepos1, "DM_MAIN_DEBTOR")
+                    strSubDebtor = Right(strSubDebtor, 2)
+                Else
+                    strSubDebtor = ""
+                End If
+                RStab(Tablepos1).rs.Close
+                RStab(Tablepos1).Open = False
+                
+                'J CODE====================================================
+                If strType = "DT" Then                          'JD20090212
+                    strType = "DE"                              'JD20090212
+                    strChanged = "Y"                            'JD20090212
+                End If                                          'JD20090212
+            
+                strCommCode = "cm"
+                strCommChargeDate = GetField(Tablepos, "ST_TRDTE")
+                strCommChargeTime = GetField(Tablepos, "ST_TRTIME")
+                strCommAgent = GetField(Tablepos, "ST_AGENT")
+                strCommConsign = GetField(Tablepos, "ST_CONSIGN")
+                dubCommChargeAmount = Val(GetField(Tablepos, "ST_COMMVAL"))
+                dubCommChargeVat = Val(GetField(Tablepos, "ST_COMMVAL_VAT"))
+                
+                'FOR DUES:
+                strDuesCode = "du"
+                strDuesChargeDate = GetField(Tablepos, "ST_TRDTE")
+                strDuesChargeTime = GetField(Tablepos, "ST_TRTIME")
+                strDuesAgent = GetField(Tablepos, "ST_AGENT")
+                strDuesConsign = GetField(Tablepos, "ST_CONSIGN")
+                dubDuesChargeAmount = Val(GetField(Tablepos, "ST_DUES"))
+                dubDuesChargeVat = Val(GetField(Tablepos, "ST_DUES_VAT"))
+                
+                'FOR SALES CSV. VARIABLES NEED TO BE SHORTER!
+                dCV = dubCommChargeAmount
+                dCVV = dubCommChargeVat
+                dDV = dubDuesChargeAmount
+                dDVV = dubDuesChargeVat
+    
+                strConsEnd = Right(strDuesConsign, 2)
+                strDuesConsign = Left(strDuesConsign, Len(strDuesConsign) - Len(strConsEnd))
+                strConsEnd = Right(strConsEnd, 1)
+                strDuesConsign = strDuesConsign & strConsEnd
+                
+                If dubDuesChargeAmount <> 0 Then
+                    If strType = "DE" Then
+                        dubDuesChargeAmount = dubDuesChargeAmount * -1
+                        dubDuesChargeVat = dubDuesChargeVat * -1
+                    End If
+                    If strWS <> "W" Then
+                        'NEW FIELDS ADDED BY JD 20140221 FOR MOKETSI
+                        Print #2, strDuesCode & "," & Format(strDuesChargeDate, "YYYY/MM/DD") & "," & Format(strDuesChargeTime, "HH:MM:SS") & "," & strAlias & "," & strDuesConsign & "," & Format(Str(dubDuesChargeAmount), "#0.00") & "," & Format(Str(dubDuesChargeVat), "#0.00") & ",,,," & strMarket & "," & strDocNo & "," & strTransNo & ",,," & Format(strDelDate, "YYYY/MM/DD") & "," & strDelind & ",,," & Format(Now, "YYYY/MM/DD") & "," & Format(Now, "HH:MM:SS")
+                        'Print #2, strDuesCode & "," & Format(strDuesChargeDate, "YYYY/MM/DD") & "," & Format(strDuesChargeTime, "HH:MM:SS") & "," & strDuesAgent & "," & strDuesConsign & "," & Format(Str(dubDuesChargeAmount), "#0.00") & "," & Format(Str(dubDuesChargeVat), "#0.00") & ",,,," & strMarket & "," & strDocNo & "," & strTransNo & ",,," & Format(strDelDate, "YYYY/MM/DD") & "," & strDelind & ",,," & Format(Now, "YYYY/MM/DD") & "," & Format(Now, "HH:MM:SS")
+                    End If
+                End If
+                
+                strConsEnd = Right(strCommConsign, 2)
+                strCommConsign = Left(strCommConsign, Len(strCommConsign) - Len(strConsEnd))
+                strConsEnd = Right(strConsEnd, 1)
+                strCommConsign = strCommConsign & strConsEnd
+                
+                If dubCommChargeAmount <> 0 Then
+                    If strType = "DE" Then
+                        dubCommChargeAmount = dubCommChargeAmount * -1
+                        dubCommChargeVat = dubCommChargeVat * -1
+                    End If
+                    If strWS <> "W" Then
+                        Print #2, strCommCode & "," & Format(strCommChargeDate, "YYYY/MM/DD") & "," & Format(strCommChargeTime, "HH:MM:SS") & "," & strAlias & "," & strCommConsign & "," & Format(Str(dubCommChargeAmount), "#0.00") & "," & Format(Str(dubCommChargeVat), "#0.00") & ",,,," & strMarket & "," & strDocNo & "," & strTransNo & ",,," & Format(strDelDate, "YYYY/MM/DD") & "," & strDelind & ",,," & Format(Now, "YYYY/MM/DD") & "," & Format(Now, "HH:MM:SS")
+                        'Print #2, strCommCode & "," & Format(strCommChargeDate, "YYYY/MM/DD") & "," & Format(strCommChargeTime, "HH:MM:SS") & "," & strCommAgent & "," & strCommConsign & "," & Format(Str(dubCommChargeAmount), "#0.00") & "," & Format(Str(dubCommChargeVat), "#0.00") & ",,,," & strMarket & "," & strDocNo & "," & strTransNo & ",,," & Format(strDelDate, "YYYY/MM/DD") & "," & strDelind & ",,," & Format(Now, "YYYY/MM/DD") & "," & Format(Now, "HH:MM:SS")
+                    End If
+                End If
+                
+                'GET TOTAL PRICE,VAT AND QTY FOR EACH CONSIGNMENT, THEN LESS EACH TOTAL IF TYPE IS DE OR DS
+                If strType = "DE" Then
+                    cuTotTRPRICE = cuTotTRPRICE - cuTRPRICE
+                    cuTotTRVAT = cuTotTRVAT - cuVat
+                End If
+                If strType = "DE" Then
+                    lngTotTRQTY = lngTotTRQTY - Val(strTrQty)
+                End If
+                
+                If strType = "SA" Then
+                     cuTotTRPRICE = cuTotTRPRICE + cuTRPRICE
+                     cuTotTRVAT = cuTotTRVAT + cuVat
+                     lngTotTRQTY = lngTotTRQTY + Val(strTrQty)
+                End If
+                
+                'CALCULATE TOTALS SALES BY CALCULATING TOTAL SALE FOR EACH LINE
+                If cuTotalValue = 0 Then
+                    'IF ITS DELETION THEN SUBTRACT VALUE FROM TOTAL,ELSE INCREMENT TOTAL VALUE
+                    If strType = "DE" Then
+                        cuTotalValue = (Val(strTrQty) * cuTRPRICE) * -1 '+ cuVat
+                        If cuVat <> 0 Then
+                            cuVat = cuVat * -1
+                        End If
+                    Else
+                        cuTotalValue = Val(strTrQty) * cuTRPRICE '+ cuVat
+                    End If
+                Else
+                    'IF ITS DELETION THEN SUBTRACT VALUE FROM TOTAL,ELSE INCREMENT TOTAL VALUE
+                    If strType = "DE" Then
+                        cuTotalValue = cuTotalValue - Val(strTrQty) * cuTRPRICE '+ cuVat
+                        If cuVat <> 0 Then
+                            cuVat = cuVat * -1
+                        End If
+                    Else
+                        cuTotalValue = cuTotalValue + Val(strTrQty) * cuTRPRICE '+ cuVat
+                    End If
+                End If
+                
+                If strType = "DE" Then
+                    strTrQty = "-" & strTrQty
+                End If
+                
+                'SELECT DISCARD REASON
+                strSql = "SELECT RSN_DESC FROM REASON_MAST WHERE RSN_REASON = '" & strReasonCode & "'"
+                Tablepos1 = Open_Table("REASON_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                strReason = GetField(Tablepos1, "RSN_DESC")
+                RStab(Tablepos1).rs.Close
+                RStab(Tablepos1).Open = False
+                
+                'SELECT ITEM AND COMMODITY IN STK_DETS TABLE
+                strSql = "SELECT * FROM STK_DETS WHERE SD_CONSIGN = '" & strConsign & "' AND SD_DATE = '" & Format(strDelDate, "YYYY/MM/DD") & "'"
+                Tablepos1 = Open_Table("STK_DETS", strSql, adOpenDynamic, adLockOptimistic)
+                strItem = GetField(Tablepos1, "SD_ITEM")
+                strCont = GetField(Tablepos1, "SD_CONT")
+                strContMass = GetField(Tablepos1, "SD_CONTMASS")
+                strClass = GetField(Tablepos1, "SD_CLASS")
+                strSize = GetField(Tablepos1, "SD_SIZE")
+                strCount = GetField(Tablepos1, "SD_COUNT")
+                strProv = GetField(Tablepos1, "SD_PROV")
+                strColour = GetField(Tablepos1, "SD_COLOUR")
+                dubCostPrice = Val(GetField(Tablepos1, "SD_COSTP"))
+                RStab(Tablepos1).rs.Close
+                RStab(Tablepos1).Open = False
+        
+                intPallCount = 0
+            
+                'SELECT ALL PALLETS FROM PALL_TRANS WHERE CONSIGN,DOCNO AND TYPE IS THE SAME AS STK_TRANS
+                If strChanged = "Y" Then                        'JD20090212
+                    strSql = "SELECT * FROM PALL_TRANS WHERE PT_MARKET = '" & strMarket & "' AND PT_OWNER = '" & strAgent & "' AND PT_CONSIGN = '" & strConsign & "'AND PT_DOCNO = '" & strDocNo & "' AND PT_TRTYPE = 'DT'"    'JD20090212
+                Else                                            'JD20090212
+                    strSql = "SELECT * FROM PALL_TRANS WHERE PT_MARKET = '" & strMarket & "' AND PT_OWNER = '" & strAgent & "' AND PT_CONSIGN = '" & strConsign & "'AND PT_DOCNO = '" & strDocNo & "' AND PT_TRTYPE = '" & strType & "'"
+                End If                                          'JD20090212
+                Tablepos2 = Open_Table("PALL_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+                Do While RStab(Tablepos2).rs.EOF = False
+                    intPallCount = intPallCount + 1
+                    
+                    If intPallCount = 1 Then
+                        strPall1 = GetField(Tablepos2, "PT_PALL")
+                        strPallQTY1 = Val(GetField(Tablepos2, "PT_TRQTY"))
+                        cuPallTRVAL1 = GetField(Tablepos2, "PT_TRVAL")
+                        strPallTrans = GetField(Tablepos2, "PT_TRANS")
+                        cuPallTRVAT1 = GetField(Tablepos2, "PT_TRVAT")
+                        strTRDATE2 = GetField(Tablepos2, "PT_TRDTE")
+                        strTRTIME2 = GetField(Tablepos2, "PT_TRTIME")
+                        'IF TYPE IS DE THEN NEGATIVE THE QUANTITY
+                        If strType = "DE" Then
+                            strPallQTY1 = "-" & strPallQTY1
+                        End If
+                    End If
+                    If intPallCount > 1 Then
+                        strPall2 = GetField(Tablepos2, "PT_PALL")
+                        strPallQTY2 = Val(GetField(Tablepos2, "PT_TRQTY"))
+                        cuPallTRVAL2 = GetField(Tablepos2, "PT_TRVAL")
+                        cuPallTRVAT2 = GetField(Tablepos2, "PT_TRVAT")
+                        strPallTrans = GetField(Tablepos2, "PT_TRANS")
+                        
+                        'GET TOTAL PALLETS, TOTAL PALLETS VALUE/PRICE AND TOTAL VAT
+                        intTotPalls = intTotPalls + Val(strPallQTY2)
+                        cuTotPallValue = cuTotPallValue + cuPallTRVAL2
+                        cuTotPallVat = cuTotPallVat + cuPallTRVAT2
+                        
+                        'IF PALLETS ARE MORE THAN 2 THEN SET PALL CODE TO "99" AND GET TOTAL VALUE AND TOTAL VAT
+                        If intPallCount > 2 Then
+                            strPall2 = "99"
+                        End If
+                    End If
+                    
+                    RStab(Tablepos2).rs.MoveNext
+                    
+                    strChanged = ""                         'JD20090212
+                Loop
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+            
+                'IF TRANSACTION TYPE IS 'DE' THEN PUT A - SIGN IN QTY
+                If strType = "DE" Then
+                    intTotPalls = "-" & intTotPalls
+                End If
+                strConsEnd = Right(strConsign, 2)
+                strConsign = Left(strConsign, Len(strConsign) - Len(strConsEnd))
+                strConsEnd = Right(strConsEnd, 1)
+                strConsign = strConsign & strConsEnd
+        
+                'WRITE TO SALES.CSV FILE
+                Print #1, strType & "," & strAlias & "," & strConsign & "," & strDocNo & "," & strDebtor & "," & strTrQty & "," & Format(cuTRPRICE, "#0.00") & "," & Format(cuVat, "#0.00") & "," & Format(strTRDATE, "YYYY/MM/DD") & "," & Format(strTRTIME, "HH:MM:SS") & "," & strSman & "," & strItem & "," & strClass & "," & strSize & "," & strCont & "," & strContMass & "," & strCount & "," & strProv & "," & strColour & "," & strCASHP & "," & strCashier & "," & strRECNO & "," & strInv & "," & strPall1 & "," & strPallQTY1 & "," & Format(cuPallTRVAL1, "#0.00") & "," & Format(cuPallTRVAT1, "#0.00") & "," & strPall2 & "," & intTotPalls & "," & Format(cuTotPallValue, "#0.00") & "," & Format(cuTotPallVat, "#0.00"); "," & Format(dubCostPrice, "#0.00") & "," & strWS & "," & strSubDebtor & "," & strProvSale & "," & strHigh & "," & strLow & "," & strAverage & "," & strTransNo & "," & UDate & "," & UTime & "," & mkt & "," & strPSC & "," & dCV & "," & dCVV & "," & dDV & "," & dDVV & "," & strDDT & "," & DI & "," & PSD
+                'Print #1, strType & "," & strAgent & "," & strConsign & "," & strDocNo & "," & strDebtor & "," & strTrQty & "," & Format(cuTRPRICE, "#0.00") & "," & Format(cuVat, "#0.00") & "," & Format(strTRDATE, "YYYY/MM/DD") & "," & Format(strTRTIME, "HH:MM:SS") & "," & strSman & "," & strItem & "," & strClass & "," & strSize & "," & strCont & "," & strContMass & "," & strCount & "," & strProv & "," & strColour & "," & strCASHP & "," & strCashier & "," & strRECNO & "," & strInv & "," & strPall1 & "," & strPallQTY1 & "," & Format(cuPallTRVAL1, "#0.00") & "," & Format(cuPallTRVAT1, "#0.00") & "," & strPall2 & "," & intTotPalls & "," & Format(cuTotPallValue, "#0.00") & "," & Format(cuTotPallVat, "#0.00"); "," & Format(dubCostPrice, "#0.00") & "," & strWS & "," & strSubDebtor & "," & strProvSale & "," & strHigh & "," & strLow & "," & strAverage & "," & strTransNo & "," & UDate & "," & UTime & "," & mkt & "," & strPSC & "," & dCV & "," & dCVV & "," & dDV & "," & dDVV & "," & strDDT & "," & DI & "," & PSD
+            
+                'CLEAR FIELDS OR SET VALUES TO ZERO FOR A NEW DOCKET NUMBER
+                intTotPalls = 0
+                cuTotPallValue = 0
+                cuTotPallVat = 0
+                
+                'TEST TO SEE IF IT CLEARS CORRECTLY NOW!!!
+                strPall1 = ""
+                strPallQTY1 = ""
+                cuPallTRVAL1 = 0
+                cuPallTRVAT1 = 0
+                strPall2 = ""
+                strPallQTY2 = ""
+                cuPallTRVAL2 = 0
+                cuPallTRVAT2 = 0
+                strTRDATE2 = ""
+                strTRTIME2 = ""
+                strWS = ""
+                
+                strChanged = ""                         'JD20090212
+                strProvSale = ""
+                RStab(Tablepos).rs.MoveNext
+            Loop
+            RStab(Tablepos).rs.Close
+            RStab(Tablepos).Open = False
+            
+            'ADDED BY LP20121012 ON JANET'S REQUEST TO INCLUDE PROVISIONAL SALES
+            strSql = "SELECT * FROM STK_TRANS WHERE ST_MARKET = '" & gblOrgstruct & "' AND ST_TRTYPE IN ('PS', 'DP') AND "
+            'strSql = strSql & "ST_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND ST_AGENT = '" & strAgent & "' ORDER BY ST_CONSIGN,ST_DOCNO"   'JD20090212
+            strSql = strSql & "ST_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND ST_AGENT = '" & strAgent & "' ORDER BY ST_CONSIGN,ST_DOCNO"   'JD20090212
+            Tablepos = Open_Table("STK_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+            Do While RStab(Tablepos).rs.EOF = False
+                intConsCount = intConsCount + 1
+                strMarket = GetField(Tablepos, "ST_MARKET")
+                DoEvents
+                strConsign = GetField(Tablepos, "ST_CONSIGN")
+                strDocNo = GetField(Tablepos, "ST_DOCNO")
+                strTrans = GetField(Tablepos, "ST_TRANS")
+                strType = GetField(Tablepos, "ST_TRTYPE")
+                strDebtor = GetField(Tablepos, "ST_DEBTOR")
+                strSman = GetField(Tablepos, "ST_SMAN")
+                strTrQty = GetField(Tablepos, "ST_TRQTY")
+                cuTRPRICE = Val(GetField(Tablepos, "ST_TRPRICE"))
+                cuVat = Val(GetField(Tablepos, "ST_TRVAT"))
+                strTRDATE = GetField(Tablepos, "ST_TRDTE")
+                strTRTIME = GetField(Tablepos, "ST_TRTIME")
+                strCASHP = GetField(Tablepos, "ST_CASHP")
+                strCashier = GetField(Tablepos, "ST_CASHIER")
+                strInv = GetField(Tablepos, "ST_TAXINV")
+                strRECNO = GetField(Tablepos, "ST_RECNO")
+                strReasonCode = GetField(Tablepos, "ST_RSN_CODE")
+                strDelDate = GetField(Tablepos, "ST_DELDATE")
+                strProvSale = GetField(Tablepos, "ST_PSSTAT")
+                
+                'NEW FIELDS FORM MOKETSI INTERFACE - JD 20140220
+                strHigh = GetField(Tablepos, "ST_HIGH")
+                strLow = GetField(Tablepos, "ST_LOW")
+                strAverage = GetField(Tablepos, "ST_AVERAGE")
+                strTransNo = GetField(Tablepos, "ST_TRANS")
+                strUpdDate = Format(Now, "YYYY/MM/DD")
+                strUpdTime = Format(Now, "HH:MM:SS")
+                strPSC = GetField(Tablepos, "ST_PROD_SECT")
+                
+                If strProvSale = "V" Then strProvSale = "PS"
+                If strAgent = "WS" Then strWS = "W" Else strWS = ""
+                
+                'JD NEW LOOKUP ADDED ON 2012-07-23 ON DOT'S REQUEST - TO ONLY SEND MAIN BUYERS INSTEAD OF SUB BUYERS
+                strSql = "SELECT DM_MAIN_DEBTOR FROM DEBTOR_MAST WHERE DM_MARKET = '" & gblOrgstruct & "' AND DM_DEBTOR = '" & strDebtor & "'"
+                Tablepos1 = Open_Table("DEBTOR_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                If GetField(Tablepos1, "DM_MAIN_DEBTOR") <> "" Then
+                    strSubDebtor = strDebtor
+                    strDebtor = GetField(Tablepos1, "DM_MAIN_DEBTOR")
+                    strSubDebtor = Right(strSubDebtor, 2)
+                Else
+                    strSubDebtor = ""
+                End If
+                RStab(Tablepos1).rs.Close
+                RStab(Tablepos1).Open = False
+                
+                'J CODE====================================================
+                If strType = "DT" Then                          'JD20090212
+                    strType = "DE"                              'JD20090212
+                    strChanged = "Y"                            'JD20090212
+                End If                                          'JD20090212
+
+                strConsEnd = Right(strDuesConsign, 2)
+                strDuesConsign = Left(strDuesConsign, Len(strDuesConsign) - Len(strConsEnd))
+                strConsEnd = Right(strConsEnd, 1)
+                strDuesConsign = strDuesConsign & strConsEnd
+                
+                If dubDuesChargeAmount <> 0 Then
+                    If strType = "DP" Then
+                    End If
+                    If strWS <> "W" Then
+                        'Print #2, strDuesCode & "," & Format(strDuesChargeDate, "YYYY/MM/DD") & "," & Format(strDuesChargeTime, "HH:MM:SS") & "," & strDuesAgent & "," & strDuesConsign & "," & Format(Str(dubDuesChargeAmount), "#0.00") & "," & Format(Str(dubDuesChargeVat), "#0.00") & "," & ","
+                    End If
+                End If
+                        
+                strConsEnd = Right(strCommConsign, 2)
+                strCommConsign = Left(strCommConsign, Len(strCommConsign) - Len(strConsEnd))
+                strConsEnd = Right(strConsEnd, 1)
+                strCommConsign = strCommConsign & strConsEnd
+                        
+                'Print #2, strCommCode & "," & Format(strCommChargeDate, "YYYY/MM/DD") & "," & Format(strCommChargeTime, "HH:MM:SS") & "," & strCommAgent & "," & strCommConsign & "," & Format(Str(dubCommChargeAmount), "#0.00") & "," & Format(Str(dubCommChargeVat), "#0.00") & "," & ","
+                If dubCommChargeAmount <> 0 Then
+                    If strType = "DP" Then
+                        'dubCommChargeAmount = dubCommChargeAmount * -1
+                        'dubCommChargeVat = dubCommChargeVat * -1
+                    End If
+                    If strWS <> "W" Then
+                        'Print #2, strCommCode & "," & Format(strCommChargeDate, "YYYY/MM/DD") & "," & Format(strCommChargeTime, "HH:MM:SS") & "," & strCommAgent & "," & strCommConsign & "," & Format(Str(dubCommChargeAmount), "#0.00") & "," & Format(Str(dubCommChargeVat), "#0.00") & "," & ","
+                    End If
+                End If
+                
+                'GET TOTAL PRICE,VAT AND QTY FOR EACH CONSIGNMENT, THEN LESS EACH TOTAL IF TYPE IS DE OR DS
+                If strType = "DP" Then
+                    cuTotTRPRICE = cuTotTRPRICE - cuTRPRICE
+                    cuTotTRVAT = cuTotTRVAT - cuVat
+                End If
+                If strType = "DP" Then
+                    lngTotTRQTY = lngTotTRQTY - Val(strTrQty)
+                End If
+                
+                If strType = "PS" Then
+                     cuTotTRPRICE = cuTotTRPRICE + cuTRPRICE
+                     cuTotTRVAT = cuTotTRVAT + cuVat
+                     lngTotTRQTY = lngTotTRQTY + Val(strTrQty)
+                End If
+                
+                'CALCULATE TOTALS SALES BY CALCULATING TOTAL SALE FOR EACH LINE
+                If cuTotalValue = 0 Then
+                    'cuTotalValue = Val(strTrQty) * cuTRPRICE '+ cuVat
+                    'IF ITS DELETION THEN SUBTRACT VALUE FROM TOTAL,ELSE INCREMENT TOTAL VALUE
+                    If strType = "DP" Then
+                        cuTotalValue = (Val(strTrQty) * cuTRPRICE) * -1 '+ cuVat
+                        If cuVat <> 0 Then
+                            'cuVat = cuVat * -1
+                        End If
+                    Else
+                        cuTotalValue = Val(strTrQty) * cuTRPRICE '+ cuVat
+                    End If
+                Else
+                    'IF ITS DELETION THEN SUBTRACT VALUE FROM TOTAL,ELSE INCREMENT TOTAL VALUE
+                    If strType = "DP" Then
+                        cuTotalValue = cuTotalValue - (Val(strTrQty) * cuTRPRICE) '+ cuVat
+                        If cuVat <> 0 Then
+                            'cuVat = cuVat * -1
+                        End If
+                    Else
+                        cuTotalValue = cuTotalValue + (Val(strTrQty) * cuTRPRICE) '+ cuVat
+                    End If
+                End If
+                
+                If strType = "DP" Then
+                    strTrQty = "-" & strTrQty
+                End If
+                
+                'SELECT DISCARD REASON
+                strSql = "SELECT RSN_DESC FROM REASON_MAST WHERE RSN_REASON = '" & strReasonCode & "'"
+                Tablepos1 = Open_Table("REASON_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                strReason = GetField(Tablepos1, "RSN_DESC")
+                RStab(Tablepos1).rs.Close
+                RStab(Tablepos1).Open = False
+                
+                'SELECT ITEM AND COMMODITY IN STK_DETS TABLE
+                strSql = "SELECT * FROM STK_DETS WHERE SD_CONSIGN = '" & strConsign & "' AND SD_DATE = '" & Format(strDelDate, "YYYY/MM/DD") & "'"
+                Tablepos1 = Open_Table("STK_DETS", strSql, adOpenDynamic, adLockOptimistic)
+                strItem = GetField(Tablepos1, "SD_ITEM")
+                strCont = GetField(Tablepos1, "SD_CONT")
+                strContMass = GetField(Tablepos1, "SD_CONTMASS")
+                strClass = GetField(Tablepos1, "SD_CLASS")
+                strSize = GetField(Tablepos1, "SD_SIZE")
+                strCount = GetField(Tablepos1, "SD_COUNT")
+                strProv = GetField(Tablepos1, "SD_PROV")
+                strColour = GetField(Tablepos1, "SD_COLOUR")
+                dubCostPrice = Val(GetField(Tablepos1, "SD_COSTP"))
+                RStab(Tablepos1).rs.Close
+                RStab(Tablepos1).Open = False
+        
+                intPallCount = 0
+                
+                strSql = "SELECT * FROM PALL_TRANS WHERE PT_MARKET = '" & strMarket & "' AND PT_OWNER = '" & strAgent & "' AND PT_CONSIGN = '" & strConsign & "'AND PT_DOCNO = '" & strDocNo & "' AND PT_TRTYPE = '" & strType & "'"
+                Tablepos2 = Open_Table("PALL_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+                Do While RStab(Tablepos2).rs.EOF = False
+                    intPallCount = intPallCount + 1
+                    
+                    If intPallCount = 1 Then
+                        strPall1 = GetField(Tablepos2, "PT_PALL")
+                        strPallQTY1 = Val(GetField(Tablepos2, "PT_TRQTY"))
+                        cuPallTRVAL1 = GetField(Tablepos2, "PT_TRVAL")
+                        strPallTrans = GetField(Tablepos2, "PT_TRANS")
+                        cuPallTRVAT1 = GetField(Tablepos2, "PT_TRVAT")
+                        strTRDATE2 = GetField(Tablepos2, "PT_TRDTE")
+                        strTRTIME2 = GetField(Tablepos2, "PT_TRTIME")
+                        'IF TYPE IS DE THEN NEGATIVE THE QUANTITY
+                        If strType = "DE" Then
+                            strPallQTY1 = "-" & strPallQTY1
+                        End If
+                    End If
+                    
+                    If intPallCount > 1 Then
+                        strPall2 = GetField(Tablepos2, "PT_PALL")
+                        strPallQTY2 = Val(GetField(Tablepos2, "PT_TRQTY"))
+                        cuPallTRVAL2 = GetField(Tablepos2, "PT_TRVAL")
+                        cuPallTRVAT2 = GetField(Tablepos2, "PT_TRVAT")
+                        strPallTrans = GetField(Tablepos2, "PT_TRANS")
+                        
+                        'GET TOTAL PALLETS, TOTAL PALLETS VALUE/PRICE AND TOTAL VAT
+                        intTotPalls = intTotPalls + Val(strPallQTY2)
+                        cuTotPallValue = cuTotPallValue + cuPallTRVAL2
+                        cuTotPallVat = cuTotPallVat + cuPallTRVAT2
+                        
+                        'IF PALLETS ARE MORE THAN 2 THEN SET PALL CODE TO "99" AND GET TOTAL VALUE AND TOTAL VAT
+                        If intPallCount > 2 Then
+                            strPall2 = "99"
+                        End If
+                    End If
+                    RStab(Tablepos2).rs.MoveNext
+                    
+                    strChanged = ""                         'JD20090212
+                Loop
+                RStab(Tablepos2).rs.Close
+                RStab(Tablepos2).Open = False
+                
+                'IF TRANSACTION TYPE IS 'DE' THEN PUT A - SIGN IN QTY
+                If strType = "DP" Then
+                    intTotPalls = "-" & intTotPalls
+                End If
+                strConsEnd = Right(strConsign, 2)
+                strConsign = Left(strConsign, Len(strConsign) - Len(strConsEnd))
+                strConsEnd = Right(strConsEnd, 1)
+                strConsign = strConsign & strConsEnd
+                
+                'WRITE TO SALES.CSV FILE
+                Print #1, strType & "," & strAlias & "," & strConsign & "," & strDocNo & "," & strDebtor & "," & strTrQty & "," & Format(cuTRPRICE, "#0.00") & "," & Format(cuVat, "#0.00") & "," & Format(strTRDATE, "YYYY/MM/DD") & "," & Format(strTRTIME, "HH:MM:SS") & "," & strSman & "," & strItem & "," & strClass & "," & strSize & "," & strCont & "," & strContMass & "," & strCount & "," & strProv & "," & strColour & "," & strCASHP & "," & strCashier & "," & strRECNO & "," & strInv & "," & strPall1 & "," & strPallQTY1 & "," & Format(cuPallTRVAL1, "#0.00") & "," & Format(cuPallTRVAT1, "#0.00") & "," & strPall2 & "," & intTotPalls & "," & Format(cuTotPallValue, "#0.00") & "," & Format(cuTotPallVat, "#0.00"); "," & Format(dubCostPrice, "#0.00") & "," & strWS & "," & strSubDebtor & "," & strProvSale & "," & strHigh & "," & strLow & "," & strAverage & "," & strTransNo & "," & strUpdDate & "," & strUpdTime & "," & mkt & "," & strPSC & ",,,,," & strDDT & ",,"
+                'Print #1, strType & "," & strAgent & "," & strConsign & "," & strDocNo & "," & strDebtor & "," & strTrQty & "," & Format(cuTRPRICE, "#0.00") & "," & Format(cuVat, "#0.00") & "," & Format(strTRDATE, "YYYY/MM/DD") & "," & Format(strTRTIME, "HH:MM:SS") & "," & strSman & "," & strItem & "," & strClass & "," & strSize & "," & strCont & "," & strContMass & "," & strCount & "," & strProv & "," & strColour & "," & strCASHP & "," & strCashier & "," & strRECNO & "," & strInv & "," & strPall1 & "," & strPallQTY1 & "," & Format(cuPallTRVAL1, "#0.00") & "," & Format(cuPallTRVAT1, "#0.00") & "," & strPall2 & "," & intTotPalls & "," & Format(cuTotPallValue, "#0.00") & "," & Format(cuTotPallVat, "#0.00"); "," & Format(dubCostPrice, "#0.00") & "," & strWS & "," & strSubDebtor & "," & strProvSale & "," & strHigh & "," & strLow & "," & strAverage & "," & strTransNo & "," & strUpdDate & "," & strUpdTime & "," & mkt & "," & strPSC & ",,,,," & strDDT & ",,"
+                'CLEAR FIELDS OR SET VALUES TO ZERO FOR A NEW DOCKET NUMBER
+                intTotPalls = 0
+                cuTotPallValue = 0
+                cuTotPallVat = 0
+                
+                'TEST TO SEE IF IT CLEARS CORRECTLY NOW!!!
+                strPall1 = ""
+                strPallQTY1 = ""
+                cuPallTRVAL1 = 0
+                cuPallTRVAT1 = 0
+                strPall2 = ""
+                strPallQTY2 = ""
+                cuPallTRVAL2 = 0
+                cuPallTRVAT2 = 0
+                strTRDATE2 = ""
+                strTRTIME2 = ""
+                strWS = ""
+                
+                strChanged = ""                         'JD20090212
+                strProvSale = ""
+                RStab(Tablepos).rs.MoveNext
+            Loop
+            
+            Close #1
+            Close #2
+            RStab(Tablepos).rs.Close
+            RStab(Tablepos).Open = False
+            
+            '\\//
+            'U:SALES_CSV_STK_TRANS;DISCARDS_CSV *
+            strDate = Format(Now, "YYYY/MM/DD")
+            strTime = Format(Now, "HH:MM:SS")
+            intPallCount = 0
+            intConsCount = 0
+            intTotPalls = 0
+            cuTotPallVat = 0
+            cuTotPallValue = 0
+            
+            strSql = "SELECT * FROM STK_TRANS WHERE ST_TRTYPE IN ('DS','DR','DD', 'DI') AND "
+            'strSql = strSql & "ST_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND ST_AGENT = '" & strAgent & "' ORDER BY ST_CONSIGN"
+            strSql = strSql & "ST_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND ST_AGENT = '" & strAgent & "' ORDER BY ST_CONSIGN"
+            Tablepos = Open_Table("STK_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+            Open strPath & "\consign_discard.csv" For Output As 1
+            intRecCount = 0
+            lngTotalRecords = 0
+            Do While RStab(Tablepos).rs.EOF = False
+                intConsCount = intConsCount + 1
+                strMarket = GetField(Tablepos, "ST_MARKET")
+                strConsign = GetField(Tablepos, "ST_CONSIGN")
+                strDocNo = GetField(Tablepos, "ST_DOCNO")
+                strTrans = GetField(Tablepos, "ST_TRANS")
+                strType = GetField(Tablepos, "ST_TRTYPE")
+                strDebtor = GetField(Tablepos, "ST_DEBTOR")
+                strSman = GetField(Tablepos, "ST_SMAN")
+                If strType = "DR" Or strType = "DD" Then
+                    strTrQty = "-" & GetField(Tablepos, "ST_TRQTY")
+                Else
+                    strTrQty = GetField(Tablepos, "ST_TRQTY")
+                End If
+                cuTRPRICE = Val(GetField(Tablepos, "ST_TRPRICE"))
+                cuVat = Val(GetField(Tablepos, "ST_TRVAT"))
+                strTRDATE = GetField(Tablepos, "ST_TRDTE")
+                strTRTIME = GetField(Tablepos, "ST_TRTIME")
+                strCASHP = GetField(Tablepos, "ST_CASHP")
+                strCashier = GetField(Tablepos, "ST_CASHIER")
+                strInv = GetField(Tablepos, "ST_TAXINV")
+                strRECNO = GetField(Tablepos, "ST_RECNO")
+                strReasonCode = GetField(Tablepos, "ST_RSN_CODE")
+                strDelDate = GetField(Tablepos, "ST_DELDATE")
+                strCertno = GetField(Tablepos, "ST_CERTNO")
+            
+                lngTotalRecords = lngTotalRecords + 1
+                lngTotTRQTY = lngTotTRQTY + Val(strTrQty)
+            
+                'SELECT DISCARD REASON
+                strSql = "SELECT RSN_DESC FROM REASON_MAST WHERE RSN_REASON = '" & strReasonCode & "' AND RSN_TYPE = 'DS'"
+                Tablepos1 = Open_Table("REASON_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                strReason = GetField(Tablepos1, "RSN_DESC")
+                RStab(Tablepos1).rs.Close
+                RStab(Tablepos1).Open = False
+            
+                'SELECT COMMODITY
+                strSql = "SELECT * FROM STK_DETS WHERE SD_CONSIGN = '" & strConsign & "' AND SD_DATE = '" & Format(strDelDate, "YYYY/MM/DD") & "'"
+                Tablepos1 = Open_Table("STK_DETS", strSql, adOpenDynamic, adLockOptimistic)
+                strItem = GetField(Tablepos1, "SD_ITEM")
+                strCont = GetField(Tablepos1, "SD_CONT")
+                strContMass = GetField(Tablepos1, "SD_CONTMASS")
+                strClass = GetField(Tablepos1, "SD_CLASS")
+                strSize = GetField(Tablepos1, "SD_SIZE")
+                strCount = GetField(Tablepos1, "SD_COUNT")
+                strProv = GetField(Tablepos1, "SD_PROV")
+                strColour = GetField(Tablepos1, "SD_COLOUR")
+                strDelno = GetField(Tablepos1, "SD_DELNO")
+                RStab(Tablepos1).rs.Close
+                RStab(Tablepos1).Open = False
+            
+                'SELECT NEEDED VALUES FROM STK_TRANS
+                strSql = "SELECT * FROM STK_MAST WHERE SM_DELNO = '" & strDelno & "' AND SM_AGENT = '" & strAgent & "' AND SM_MARKET = '" & strMarket & "' AND SM_DDATE = '" & Format(strDelDate, "YYYY/MM/DD") & "'"
+                Tablepos1 = Open_Table("STK_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                strDelTime = GetField(Tablepos1, "SM_DTIME")
+                strSupplier = GetField(Tablepos1, "SM_SUPP")
+                strRefno = GetField(Tablepos1, "SM_REFNO")
+                RStab(Tablepos1).rs.Close
+                RStab(Tablepos1).Open = False
+                
+                If gblOrgstruct = "32" Or gblOrgstruct = "40" Then
+                    strRefno = strCertno
+                End If
+            
+                strConsEnd = Right(strConsign, 2)
+                strConsign = Left(strConsign, Len(strConsign) - Len(strConsEnd))
+                strConsEnd = Right(strConsEnd, 1)
+                strConsign = strConsign & strConsEnd
+                
+                'NEW FIELDS ADDED: MARKET, DOCNO, TRANSNO, DELDATE, UPD_DATE, UPD_TIME
+                Print #1, strConsign & "," & strDelno & "," & strAlias & "," & Format(strTRDATE, "YYYY/MM/DD") & "," & Format(strDelTime, "HH:MM:SS") & "," & strSupplier & "," & strRefno & "," & strTrQty & "," & strReasonCode & "," & strReason & "," & mkt & "," & strDocNo & "," & strTrans & "," & Format(strDelDate, "YYYY/MM/DD") & "," & Format(Now, "YYYY/MM/DD") & "," & Format(Now, "HH:MM:SS")
+                'Print #1, strConsign & "," & strDelno & "," & strAgent & "," & Format(strTRDATE, "YYYY/MM/DD") & "," & Format(strDelTime, "HH:MM:SS") & "," & strSupplier & "," & strRefno & "," & strTrQty & "," & strReasonCode & "," & strReason & "," & mkt & "," & strDocNo & "," & strTrans & "," & Format(strDelDate, "YYYY/MM/DD") & "," & Format(Now, "YYYY/MM/DD") & "," & Format(Now, "HH:MM:SS")
+            
+                RStab(Tablepos).rs.MoveNext
+            Loop
+            
+            Close #1
+            RStab(Tablepos).rs.Close
+            RStab(Tablepos).Open = False
+            
+            '\\//
+            'U:CHARGES_PROCESSING;PROCESS *
+            'strSql = "SELECT * FROM LOC_TRANS WHERE LT_TYPE IN ('IS','DE') AND LT_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND LT_AGENT = '" & strAgent & "'" '
+            strSql = "SELECT * FROM LOC_TRANS WHERE LT_TYPE IN ('IS','DE') AND LT_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND LT_AGENT = '" & strAgent & "'" '
+            Tablepos = Open_Table("LOC_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        
+            Open strPath & "\charges.csv" For Append As 1
+            Do While RStab(Tablepos).rs.EOF = False
+            
+                intcounterzx = intcounterzx + 1
+                
+                strRoom = GetField(Tablepos, "LT_LOCA")
+                strConsign = GetField(Tablepos, "LT_CONSIGNO")
+                strChargeDate = GetField(Tablepos, "LT_CHG_DATE")
+                strChargeTime = GetField(Tablepos, "LT_CHG_TIME")
+                If GetField(Tablepos, "LT_TYPE") = "DE" Then
+                    dubChargeAmount = Val(GetField(Tablepos, "LT_TRVALUE")) * -1
+                    dubChargeVat = Val(GetField(Tablepos, "LT_TRVAT")) * -1
+                Else
+                    dubChargeAmount = Val(GetField(Tablepos, "LT_TRVALUE"))
+                    dubChargeVat = Val(GetField(Tablepos, "LT_TRVAT"))
+                End If
+                strDepNo = GetField(Tablepos, "LT_DEPNO")
+            
+                'NEW FIELDS JD 20140221 -> MOKETSI
+                strDocNo = GetField(Tablepos, "LT_DOCNO")
+                strTransNo = GetField(Tablepos, "LT_TRANS")
+                strDelind = GetField(Tablepos, "LT_DELIND")
+                strDelDate = GetField(Tablepos, "LT_DELDATE")
+                strUser = GetField(Tablepos, "LT_USER")
+                strComment = GetField(Tablepos, "LT_COMMENT")
+                strComment = Replace(strComment, ",", "-")
+            
+                If Left(strDepNo, 1) <> "D" Then
+                    dubTotChargeAmount = dubTotChargeAmount + dubChargeAmount
+                    dubTotChargeVat = dubTotChargeVat + dubChargeVat
+                    
+                    'LOCATION TYPE (CS OR RR)
+                    strSql = "SELECT LM_TYPE, LM_AGENT FROM LOCATION_MAST WHERE LM_CODE = '" & strRoom & "'"
+                    Tablepos2 = Open_Table("LOCATION_MAST", strSql, adOpenDynamic, adLockOptimistic)
+                    If RStab(Tablepos).rs.EOF = False Then
+                        strOwner = GetField(Tablepos2, "LM_AGENT")
+                        strType = GetField(Tablepos2, "LM_TYPE")
+                        
+                        If strType = "CS" Then
+                            strCode = "cs"
+                        End If
+                        If strType = "RR" Then
+                            strCode = "rr"
+                        End If
+                        If strType = "WR" Then
+                            strCode = "wr"
+                        End If
+                    End If
+                    RStab(Tablepos2).rs.Close
+                    RStab(Tablepos2).Open = False
+                    
+                    If strOwner = "" Then strOwner = "MKT"
+                    
+                    strConsEnd = Right(strConsign, 2)
+                    strConsign = Left(strConsign, Len(strConsign) - Len(strConsEnd))
+                    strConsEnd = Right(strConsEnd, 1)
+                    strConsign = strConsign & strConsEnd
+                    
+                    If strCode <> "" Then
+                        'NEW FIELDS ADDED BY JD 20140221 FOR THE MOKETSI INTERFACE
+                        Print #1, strCode & "," & Format(strChargeDate, "YYYY/MM/DD") & "," & Format(strChargeTime, "HH:MM:SS") & "," & strAlias & "," & strConsign & "," & Format(Str(dubChargeAmount), "#0.00") & "," & Format(Str(dubChargeVat), "#0.00") & ",," & strRoom & "," & strAlias & "," & strMarket & "," & strDocNo & "," & strTransNo & "," & strDepNo & ",," & Format(strDelDate, "YYYY/MM/DD") & "," & strDelind & "," & strUser & "," & strComment & "," & Format(Now, "YYYY/MM/DD") & "," & Format(Now, "HH:MM:SS")
+                        'Print #1, strCode & "," & Format(strChargeDate, "YYYY/MM/DD") & "," & Format(strChargeTime, "HH:MM:SS") & "," & strAgent & "," & strConsign & "," & Format(Str(dubChargeAmount), "#0.00") & "," & Format(Str(dubChargeVat), "#0.00") & ",," & strRoom & "," & strOwner & "," & strMarket & "," & strDocNo & "," & strTransNo & "," & strDepNo & ",," & Format(strDelDate, "YYYY/MM/DD") & "," & strDelind & "," & strUser & "," & strComment & "," & Format(Now, "YYYY/MM/DD") & "," & Format(Now, "HH:MM:SS")
+                    End If
+                End If
+            
+                RStab(Tablepos).rs.MoveNext
+            Loop
+            RStab(Tablepos).rs.Close
+            RStab(Tablepos).Open = False
+        
+            'strSql = "SELECT * FROM LEVY_TRANS WHERE LVT_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND LVT_AGENT = '" & strAgent & "' AND (LVT_TIME <> 'RESER' OR ISNULL(LVT_TIME)) "
+            strSql = "SELECT * FROM LEVY_TRANS WHERE LVT_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND LVT_AGENT = '" & strAgent & "' AND (LVT_TIME <> 'RESER' OR ISNULL(LVT_TIME)) "
+            Tablepos = Open_Table("LEVY_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+            
+            Do While RStab(Tablepos).rs.EOF = False
+                strCode = "lv"
+                strChargeDate = GetField(Tablepos, "LVT_DATE")
+                strChargeTime = GetField(Tablepos, "LVT_TIME")
+                strConsign = GetField(Tablepos, "LVT_CONSIGN")
+                dubChargeAmount = Val(GetField(Tablepos, "LVT_LEVYAMT"))
+                dubChargeVat = Val(GetField(Tablepos, "LVT_LEVYVAT"))
+                strLevyCode = GetField(Tablepos, "LVT_LEVYCD")
+                strType = GetField(Tablepos, "LVT_TYPE")
+                
+                'NEW FIELDS ADDED BY JD 20140221 FOR MOKETSI
+                strDocNo = GetField(Tablepos, "LVT_DOCNO")
+                strTransNo = GetField(Tablepos, "LVT_TRANS")
+                strDelind = GetField(Tablepos, "LVT_DELIND")
+                strDelDate = GetField(Tablepos, "LVT_DELDATE")
+                strSupplier = GetField(Tablepos, "LVT_SUPPLIER")
+                
+                If strType = "DT" Then strType = "DE"
+                If strType = "DE" Then
+                    dubChargeAmount = dubChargeAmount * -1
+                    dubChargeVat = dubChargeVat * -1
+                End If
+                
+                dubTotLevyAmount = dubTotLevyAmount + dubChargeAmount
+                dubTotLevyVat = dubTotLevyVat + dubChargeVat
+                
+                strConsEnd = Right(strConsign, 2)
+                strConsign = Left(strConsign, Len(strConsign) - Len(strConsEnd))
+                strConsEnd = Right(strConsEnd, 1)
+                strConsign = strConsign & strConsEnd
+                
+                Print #1, strCode & "," & Format(strChargeDate, "YYYY/MM/DD") & "," & Format(strChargeTime, "HH:MM:SS") & "," & strAlias & "," & strConsign & "," & Format(Str(dubChargeAmount), "#0.00") & "," & Format(Str(dubChargeVat), "#0.00") & "," & strLevyCode & ",,," & strMarket & "," & strDocNo & "," & strTransNo & ",," & strSupplier & "," & Format(strDelDate, "YYYY/MM/DD") & "," & strDelind & ",,," & Format(Now, "YYYY/MM/DD") & "," & Format(Now, "HH:MM:SS")
+                'Print #1, strCode & "," & Format(strChargeDate, "YYYY/MM/DD") & "," & Format(strChargeTime, "HH:MM:SS") & "," & strAgent & "," & strConsign & "," & Format(Str(dubChargeAmount), "#0.00") & "," & Format(Str(dubChargeVat), "#0.00") & "," & strLevyCode & ",,," & strMarket & "," & strDocNo & "," & strTransNo & ",," & strSupplier & "," & Format(strDelDate, "YYYY/MM/DD") & "," & strDelind & ",,," & Format(Now, "YYYY/MM/DD") & "," & Format(Now, "HH:MM:SS")
+                
+                RStab(Tablepos).rs.MoveNext
+            Loop
+            RStab(Tablepos).rs.Close
+            RStab(Tablepos).Open = False
+            
+            'DISCARDS CHARGES
+            'strSql = "SELECT * FROM DEDUCT_TRANS WHERE DT_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND DT_AGENT = '" & strAgent & "'"
+            strSql = "SELECT * FROM DEDUCT_TRANS WHERE DT_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "' AND DT_AGENT = '" & strAgent & "'"
+            Tablepos = Open_Table("DEDUCT_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+            
+            Do While RStab(Tablepos).rs.EOF = False
+                strCode = "ds"
+                strDeductCode = GetField(Tablepos, "DT_DEDUCT_CODE")
+                strConsign = GetField(Tablepos, "DT_CONSIGN")
+                dubChargeAmount = Val(GetField(Tablepos, "DT_AMOUNT"))
+                
+                'NEW FIELDS ADDED BY JD 20140221 FOR MOKETSI
+                strDocNo = GetField(Tablepos, "DT_DOCNO")
+                strTransNo = GetField(Tablepos, "DT_TRANS")
+                strDelind = ""
+                strDelDate = GetField(Tablepos, "DT_DELDATE")
+                
+                strConsEnd = Right(strConsign, 2)
+                strConsign = Left(strConsign, Len(strConsign) - Len(strConsEnd))
+                strConsEnd = Right(strConsEnd, 1)
+                strConsign = strConsign & strConsEnd
+                
+                Print #1, strCode & "," & "," & "," & strAlias & "," & strConsign & "," & Format(Str(dubChargeAmount), "#0.00") & "," & "," & "," & strDeductCode & ",," & strMarket & "," & strDocNo & "," & strTransNo & ",,," & Format(strDelDate, "YYYY/MM/DD") & "," & strDelind & ",,," & Format(Now, "YYYY/MM/DD") & "," & Format(Now, "HH:MM:SS")
+                'Print #1, strCode & "," & "," & "," & strAgent & "," & strConsign & "," & Format(Str(dubChargeAmount), "#0.00") & "," & "," & "," & strDeductCode & ",," & strMarket & "," & strDocNo & "," & strTransNo & ",,," & Format(strDelDate, "YYYY/MM/DD") & "," & strDelind & ",,," & Format(Now, "YYYY/MM/DD") & "," & Format(Now, "HH:MM:SS")
+                
+                RStab(Tablepos).rs.MoveNext
+            Loop
+            RStab(Tablepos).rs.Close
+            RStab(Tablepos).Open = False
+            Close #1
+            
+            'SALESMAN CSV FILES (NEW FOR THIS FUNCTION ONLY)
+            'new salesman
+            strSql = "SELECT * FROM AUD_SALESMAN_MAST"
+            strSql = strSql & " WHERE ASLS_AUD_TYPE = 'INS' AND ASLS_UPD_DATE IS NULL AND ASLS_UPD_TIME IS NULL AND ASLS_AGENT = '" & strAgent & "' "
+            strSql = strSql & " ORDER BY ASLS_AGENT,ASLS_CODE"
+            Tablepos = Open_Table("AUD_SALESMAN_MAST", strSql, adOpenDynamic, adLockOptimistic)
+            Open "C:\legend\proj_fms\export\" & strAgent & "\sman_new" & ".csv" For Output As 1
+            Do While RStab(Tablepos).rs.EOF = False
+                strSman = GetField(Tablepos, "ASLS_CODE")
+                strSmanName = GetField(Tablepos, "ASLS_NAME")
+                strSmanName = Replace(strSmanName, ",", "")
+                strSS = GetField(Tablepos, "ASLS_SALES_SECT")
+                strIS = GetField(Tablepos, "ASLS_ITEM_SECT")
+                strSmanTel = GetField(Tablepos, "ASLS_TELNO")
+                strSmanCell = GetField(Tablepos, "ASLS_CELLNO")
+                strSMPS = GetField(Tablepos, "ASLS_PROV_SALES")
+                strSMPSPin = GetField(Tablepos, "ASLS_PIN_NO")
+                strSMAD1 = GetField(Tablepos, "ASLS_ADDR1")
+                strSMAD2 = GetField(Tablepos, "ASLS_ADDR2")
+                strSMAD3 = GetField(Tablepos, "ASLS_ADDR3")
+                strSMPC = GetField(Tablepos, "ASLS_PCODE")
+                strSMHC = GetField(Tablepos, "ASLS_HIDDEN_CODE")
+                strSMMKT = GetField(Tablepos, "ASLS_MARKET")
+                
+                strSMAudDate = GetField(Tablepos, "ASAG_AUD_DATE")
+                strSMAudTime = GetField(Tablepos, "ASAG_AUD_TIME")
+                strSMIP = GetField(Tablepos, "ASAG_AUD_IP")
+                strSMUser = GetField(Tablepos, "ASAG_AUD_USER")
+                
+                strDate = Format(Now, "YYYY/MM/DD")
+                strTime = Format(Now, "HH:MM:SS")
+                
+                Print #1, strSMMKT & "," & strAlias & "," & strSman & "," & strSmanName & "," & strSS & "," & strIS & "," & strSmanTel & "," & strSmanCell & "," & strSMPS & "," & strSMPSPin & "," & strSMAD1 & "," & strSMAD2 & "," & strSMAD3 & "," & strSMPC & "," & strSMHC & "," & strSMAudDate & "," & strSMAudTime & "," & strSMIP & "," & strSMUser
+                'Print #1, strSMMKT & "," & strAgent & "," & strSman & "," & strSmanName & "," & strSS & "," & strIS & "," & strSmanTel & "," & strSmanCell & "," & strSMPS & "," & strSMPSPin & "," & strSMAD1 & "," & strSMAD2 & "," & strSMAD3 & "," & strSMPC & "," & strSMHC & "," & strSMAudDate & "," & strSMAudTime & "," & strSMIP & "," & strSMUser
+                
+                RStab(Tablepos).rs.MoveNext
+            Loop
+            RStab(Tablepos).rs.Close
+            RStab(Tablepos).Open = False
+            Close #1
+            
+            'strSql = "UPDATE AUD_SALESMAN_MAST SET ASLS_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "', ASLS_UPD_TIME = '" & Format(Now, "YYYY/MM/DD") & "' "
+            strSql = "UPDATE AUD_SALESMAN_MAST SET ASLS_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "', ASLS_UPD_TIME = '" & Format(Now, "YYYY/MM/DD") & "' "
+            strSql = strSql & "WHERE ASLS_AGENT = '" & strAgent & "' AND ASLS_AUD_TYPE = 'INS' "
+            strSql = strSql & "AND ASLS_UPD_DATE IS NULL AND ASLS_UPD_TIME IS NULL"
+            Tablepos = Open_Table("AUD_SALESMAN_MAST", strSql, adOpenDynamic, adLockOptimistic)
+            
+            'changed salesman
+            strSql = "SELECT * FROM AUD_SALESMAN_MAST"
+            strSql = strSql & " WHERE ASLS_AUD_TYPE = 'UPD' AND ASLS_UPD_DATE IS NULL AND ASLS_UPD_TIME IS NULL AND ASLS_AGENT = '" & strAgent & "' "
+            strSql = strSql & " ORDER BY ASLS_AGENT,ASLS_CODE"
+            Tablepos = Open_Table("AUD_SALESMAN_MAST", strSql, adOpenDynamic, adLockOptimistic)
+            Open "C:\legend\proj_fms\export\" & strAgent & "\sman_amend" & ".csv" For Output As 1
+            Do While RStab(Tablepos).rs.EOF = False
+                strSman = GetField(Tablepos, "ASLS_CODE")
+                strSmanName = GetField(Tablepos, "ASLS_NAME")
+                strSmanName = Replace(strSmanName, ",", "")
+                strSS = GetField(Tablepos, "ASLS_SALES_SECT")
+                strIS = GetField(Tablepos, "ASLS_ITEM_SECT")
+                strSmanTel = GetField(Tablepos, "ASLS_TELNO")
+                strSmanCell = GetField(Tablepos, "ASLS_CELLNO")
+                strSMPS = GetField(Tablepos, "ASLS_PROV_SALES")
+                strSMPSPin = GetField(Tablepos, "ASLS_PIN_NO")
+                strSMAD1 = GetField(Tablepos, "ASLS_ADDR1")
+                strSMAD2 = GetField(Tablepos, "ASLS_ADDR2")
+                strSMAD3 = GetField(Tablepos, "ASLS_ADDR3")
+                strSMPC = GetField(Tablepos, "ASLS_PCODE")
+                strSMHC = GetField(Tablepos, "ASLS_HIDDEN_CODE")
+                strSMMKT = GetField(Tablepos, "ASLS_MARKET")
+                
+                strSMAudDate = GetField(Tablepos, "ASAG_AUD_DATE")
+                strSMAudTime = GetField(Tablepos, "ASAG_AUD_TIME")
+                strSMIP = GetField(Tablepos, "ASAG_AUD_IP")
+                strSMUser = GetField(Tablepos, "ASAG_AUD_USER")
+                
+                strDate = Format(Now, "YYYY/MM/DD")
+                strTime = Format(Now, "HH:MM:SS")
+                
+                'mkt,agn,sman,name,sls_sect,item_sect,tel,cell,prov_sls_indicator,prov_sls_pin,addr1,addr2,addr3,pcode,hidden_code,aud_date,aud_time,aud_IP,aud_user
+                Print #1, strSMMKT & "," & strAlias & "," & strSman & "," & strSmanName & "," & strSS & "," & strIS & "," & strSmanTel & "," & strSmanCell & "," & strSMPS & "," & strSMPSPin & "," & strSMAD1 & "," & strSMAD2 & "," & strSMAD3 & "," & strSMPC & "," & strSMHC & "," & strSMAudDate & "," & strSMAudTime & "," & strSMIP & "," & strSMUser
+                'Print #1, strSMMKT & "," & strAgent & "," & strSman & "," & strSmanName & "," & strSS & "," & strIS & "," & strSmanTel & "," & strSmanCell & "," & strSMPS & "," & strSMPSPin & "," & strSMAD1 & "," & strSMAD2 & "," & strSMAD3 & "," & strSMPC & "," & strSMHC & "," & strSMAudDate & "," & strSMAudTime & "," & strSMIP & "," & strSMUser
+                
+                RStab(Tablepos).rs.MoveNext
+            Loop
+            RStab(Tablepos).rs.Close
+            RStab(Tablepos).Open = False
+            Close #1
+            
+            strSql = "UPDATE AUD_SALESMAN_MAST SET ASLS_UPD_DATE = '" & Format(Now, "YYYY/MM/DD") & "', ASLS_UPD_TIME = '" & Format(Now, "YYYY/MM/DD") & "' "
+            strSql = strSql & "WHERE ASLS_AUD_TYPE = 'UPD' AND ASLS_UPD_DATE IS NULL "
+            strSql = strSql & "AND ASLS_UPD_TIME IS NULL AND ASLS_AGENT = '" & strAgent & "' "
+            Tablepos = Open_Table("AUD_SALESMAN_MAST", strSql, adOpenDynamic, adLockOptimistic)
+            
+            'CALL THE SUPPLIER FAX AMEND FOR THIS AGENT
+            Call U_SUPPLIER_FAX_AMEND_HO(strAgent, strAlias)
+            RStab(Tablepos91).rs.MoveNext
+        Loop
+        RStab(Tablepos91).rs.Close
+        RStab(Tablepos91).Open = False
+    End If
+End Function

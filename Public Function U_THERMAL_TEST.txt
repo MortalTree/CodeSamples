@@ -1,0 +1,246 @@
+Public Function U_THERMAL_TEST(pUserRoutine As String, pRuleName As String, pEntryPoint As String, pIndex As Integer, pParm As String) As String
+    Dim strCashier As String
+    Dim strAgent As String
+    Dim strUser As String
+    Dim strIP As String
+    Dim strSql As String
+    Dim Tablepos3 As Integer
+    Dim intCount As Integer
+    Dim strDocNo As String
+    
+    '=========================
+    'SCREEN NAME: THERMAL_TEST
+    '=========================
+    
+    'U:THERMAL_TEST;AGENT
+    If pRuleName = "AGENT" Then
+        strAgent = GetObjectValue("I\ORGS")
+        
+        If strAgent = "" Then strAgent = "NONE DETECTED"
+        
+        'GET THE PRINTER FOR THIS USER
+        strSql = "SELECT ZU_PRN_NAME " & _
+                    "FROM ZU_USER " & _
+                    "WHERE ZU_USERID = '" & GetObjectValue("I\USER") & "'"
+        
+        Tablepos3 = Open_Table("ZU_USER", strSql, adOpenDynamic, adLockOptimistic)
+        gblPrnName = GetField(Tablepos3, "ZU_PRN_NAME")     'NEED TO SET THE GLOBAL PRINTER NAME IF PRINTING FROM MAINMENU
+        RStab(Tablepos3).rs.Close
+        RStab(Tablepos3).Open = False
+        
+        Call PutObjectValue("I\PATH", gblPrnName)
+        
+        'PRINTING
+        prtBlobString = ""
+        U_PRINTLINE String(1, " ") & prtCond & "REFRESH AGENT THERMAL DOCKET TEST" & prtCondCancel
+        U_PRINTLINE ""
+        
+        U_PRINTLINE String(8, " ") & prtBold & "** BOLD HEADER **" & prtBoldCancel
+        
+        U_PRINTLINE String(2, " ") & prtBold & Format(Now, "HH:MM") & "   " & Format(Now, "DD MMM YYYY") & " - " & Format(Now, "DDDD") & prtBoldCancel
+        
+        U_PRINTLINE ""
+        U_PRINTLINE String(1, " ") & "MARKET  : " & gblOrgstruct
+        U_PRINTLINE String(1, " ") & "AGENT   : " & strAgent
+        U_PRINTLINE String(1, " ") & "IP      : " & gblIPAddress
+        U_PRINTLINE String(1, " ") & "USER    : " & gblUser
+        U_PRINTLINE String(1, " ") & "***********************************************"
+        U_PRINTLINE ""
+        U_PRINTLINE ""
+                
+        If gblOrgstruct = "23" Then
+            strDocNo = "FGB01GB1722"
+            Open gblPrnName For Output As #46
+            For intCount = 1 To 15
+                Print #46, intCount
+                Print #46, prtBlobString
+                Print #46, " "
+                Print #46, Chr$(&H1D); "H"; Chr$(15);
+                Print #46, Chr$(&H1D); "w"; Chr$(2);
+                Print #46, Chr$(&H1D); "f"; Chr$(0);
+                Print #46, Chr$(&H1D); "H"; Chr$(1);
+                Print #46, Chr$(&H1D); "h"; Chr$(250);
+                Print #46, Chr$(&H1D); "k";
+                Print #46, Chr$(4);
+                Print #46, strDocNo; Chr$(0);
+                Print #46, Chr$(&H1D); "V"; Chr$(66); Chr$(0); 'Feeds paper & cut
+                Print #46, " "
+            Next intCount
+            Close #46
+        ElseIf gblOrgstruct = "18" Then
+            strDocNo = "W5J290969519"
+            Open gblPrnName For Output As #46
+            For intCount = 1 To 15
+                Print #46, intCount
+                Print #46, prtBlobString
+                Print #46, " "
+                Print #46, Chr$(&H1D); "H"; Chr$(15);
+                Print #46, Chr$(&H1D); "w"; Chr$(2);
+                Print #46, Chr$(&H1D); "f"; Chr$(0);
+                Print #46, Chr$(&H1D); "H"; Chr$(1);
+                Print #46, Chr$(&H1D); "h"; Chr$(250);
+                Print #46, Chr$(&H1D); "k";
+                Print #46, Chr$(4);
+                Print #46, strDocNo; Chr$(0);
+                Print #46, Chr$(&H1D); "V"; Chr$(66); Chr$(0); 'Feeds paper & cut
+                Print #46, " "
+            Next intCount
+            Close #46
+        ElseIf gblOrgstruct = "11" Then
+            strDocNo = "T6I19PU1672"
+            Open gblPrnName For Output As #46
+            For intCount = 1 To 15
+                Print #46, intCount
+                Print #46, prtBlobString
+                Print #46, " "
+                Print #46, Chr$(&H1D); "H"; Chr$(15);
+                Print #46, Chr$(&H1D); "w"; Chr$(2);
+                Print #46, Chr$(&H1D); "f"; Chr$(0);
+                Print #46, Chr$(&H1D); "H"; Chr$(1);
+                Print #46, Chr$(&H1D); "h"; Chr$(250);
+                Print #46, Chr$(&H1D); "k";
+                Print #46, Chr$(4);
+                Print #46, strDocNo; Chr$(0);
+                Print #46, Chr$(&H1D); "V"; Chr$(66); Chr$(0); 'Feeds paper & cut
+                Print #46, " "
+            Next intCount
+            Close #46
+        ElseIf gblOrgstruct = "15" Then
+            strDocNo = "W6K16FN7210"
+            Open gblPrnName For Output As #46
+            For intCount = 1 To 15
+                Print #46, intCount
+                Print #46, prtBlobString
+                Print #46, " "
+                Print #46, Chr$(&H1D); "H"; Chr$(15);
+                Print #46, Chr$(&H1D); "w"; Chr$(2);
+                Print #46, Chr$(&H1D); "f"; Chr$(0);
+                Print #46, Chr$(&H1D); "H"; Chr$(1);
+                Print #46, Chr$(&H1D); "h"; Chr$(250);
+                Print #46, Chr$(&H1D); "k";
+                Print #46, Chr$(4);
+                Print #46, strDocNo; Chr$(0);
+                Print #46, Chr$(&H1D); "V"; Chr$(66); Chr$(0); 'Feeds paper & cut
+                Print #46, " "
+            Next intCount
+            Close #46
+        Else
+            U_PRINTLINE prtPaperCut
+            Open gblPrnName For Output As #46
+            Print #46, prtBlobString
+            Close #46
+        End If
+    End If
+    
+    'U:THERMAL_TEST;CASHIER
+    If pRuleName = "CASHIER" Then
+        
+        strCashier = ""
+        strSql = "SELECT CC_CASHPOINT, CC_CASHIER " & _
+                     "FROM CASHPOINT_CASHIER " & _
+                     "WHERE " & _
+                         "CC_CASHPOINT = '" & GetObjectValue("I\CASHPOINT") & "'"
+        
+        Tablepos3 = Open_Table("CASHPOINT_CASHIER", strSql, adOpenDynamic, adLockOptimistic)
+        strCashier = GetField(Tablepos3, "CC_CASHIER")
+        RStab(Tablepos3).rs.Close
+        RStab(Tablepos3).Open = False
+        
+        strSql = "SELECT ZU_PRN_NAME " & _
+                    "FROM ZU_USER " & _
+                    "WHERE ZU_USERID = '" & strCashier & "'"
+        
+        Tablepos3 = Open_Table("ZU_USER", strSql, adOpenDynamic, adLockOptimistic)
+        gblPrnName = GetField(Tablepos3, "ZU_PRN_NAME")     'NEED TO SET THE GLOBAL PRINTER NAME IF PRINTING FROM MAINMENU
+        RStab(Tablepos3).rs.Close
+        RStab(Tablepos3).Open = False
+        
+        Call PutObjectValue("I\PATH", gblPrnName)
+        
+        'PRINTING
+        prtBlobString = ""
+        U_PRINTLINE String(1, " ") & prtCond & "REFRESH CASHIER THERMAL DOCKET TEST" & prtCondCancel
+        U_PRINTLINE ""
+        
+        U_PRINTLINE String(8, " ") & prtBold & "** BOLD HEADER **" & prtBoldCancel
+        
+        U_PRINTLINE String(2, " ") & prtBold & Format(Now, "HH:MM") & "   " & Format(Now, "DD MMM YYYY") & " - " & Format(Now, "DDDD") & prtBoldCancel
+        
+        U_PRINTLINE ""
+        U_PRINTLINE String(1, " ") & "MARKET  : " & gblOrgstruct
+        U_PRINTLINE String(1, " ") & "CASHIER : " & strCashier
+        U_PRINTLINE String(1, " ") & "CP      : " & GetObjectValue("I\CASHPOINT")
+        U_PRINTLINE String(1, " ") & "IP      : " & gblIPAddress
+        U_PRINTLINE String(1, " ") & "USER    : " & gblUser
+        U_PRINTLINE String(1, " ") & "***********************************************"
+        U_PRINTLINE ""
+        U_PRINTLINE ""
+        
+        If gblOrgstruct <> "23" Then
+            If gblOrgstruct = "11" Then
+                strDocNo = "T6I19PU1672"
+                Open gblPrnName For Output As #46
+                For intCount = 1 To 15
+                    Print #46, intCount
+                    Print #46, prtBlobString
+                    Print #46, " "
+                    Print #46, Chr$(&H1D); "H"; Chr$(15);
+                    Print #46, Chr$(&H1D); "w"; Chr$(2);
+                    Print #46, Chr$(&H1D); "f"; Chr$(0);
+                    Print #46, Chr$(&H1D); "H"; Chr$(1);
+                    Print #46, Chr$(&H1D); "h"; Chr$(250);
+                    Print #46, Chr$(&H1D); "k";
+                    Print #46, Chr$(4);
+                    Print #46, strDocNo; Chr$(0);
+                    Print #46, Chr$(&H1D); "V"; Chr$(66); Chr$(0); 'Feeds paper & cut
+                    Print #46, " "
+                Next intCount
+                Close #46
+            ElseIf gblOrgstruct = "15" Then
+                strDocNo = "W6K16FN7210"
+                Open gblPrnName For Output As #46
+                For intCount = 1 To 15
+                    Print #46, intCount
+                    Print #46, prtBlobString
+                    Print #46, " "
+                    Print #46, Chr$(&H1D); "H"; Chr$(15);
+                    Print #46, Chr$(&H1D); "w"; Chr$(2);
+                    Print #46, Chr$(&H1D); "f"; Chr$(0);
+                    Print #46, Chr$(&H1D); "H"; Chr$(1);
+                    Print #46, Chr$(&H1D); "h"; Chr$(250);
+                    Print #46, Chr$(&H1D); "k";
+                    Print #46, Chr$(4);
+                    Print #46, strDocNo; Chr$(0);
+                    Print #46, Chr$(&H1D); "V"; Chr$(66); Chr$(0); 'Feeds paper & cut
+                    Print #46, " "
+                Next intCount
+                Close #46
+            Else
+                U_PRINTLINE prtPaperCut
+                Open gblPrnName For Output As #44
+                Print #44, prtBlobString
+                Close #44
+            End If
+        Else
+            strDocNo = "FGB01GB1722"
+            Open gblPrnName For Output As #46
+            For intCount = 1 To 15
+                Print #46, intCount
+                Print #46, prtBlobString
+                Print #46, " "
+                Print #46, Chr$(&H1D); "H"; Chr$(15);
+                Print #46, Chr$(&H1D); "w"; Chr$(2);
+                Print #46, Chr$(&H1D); "f"; Chr$(0);
+                Print #46, Chr$(&H1D); "H"; Chr$(1);
+                Print #46, Chr$(&H1D); "h"; Chr$(250);
+                Print #46, Chr$(&H1D); "k";
+                Print #46, Chr$(4);
+                Print #46, strDocNo; Chr$(0);
+                Print #46, Chr$(&H1D); "V"; Chr$(66); Chr$(0); 'Feeds paper & cut
+                Print #46, " "
+            Next intCount
+            Close #46
+        End If
+    End If
+    
+End Function

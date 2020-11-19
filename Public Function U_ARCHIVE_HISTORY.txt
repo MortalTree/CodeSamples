@@ -1,0 +1,586 @@
+'---------------------------------------------------------------------------------------
+' Procedure : U_ARCHIVE_HISTORY
+' Author    : JD
+' Date      : 01/02/2013
+' Purpose   : MOVES DATA FROM THE MAIN DATABASE TO AN ARCHIVE DATABASE.
+'---------------------------------------------------------------------------------------
+Public Function U_ARCHIVE_HISTORY(pUserRoutine As String, pRuleName As String, pEntryPoint As String, pIndex As Integer, pParm As String) As String
+    Dim strSTKList As String      'jd 20150929 - to select fields from schema
+    Dim strDTList As String       'jd 20150929 - to select fields from schema
+    Dim strZUList As String       'jd 20150929 - to select fields from schema
+    Dim strDDBList As String      'jd 20150929 - to select fields from schema
+    Dim intCount As Long          'jd 20150929 - to select fields from schema
+    Dim lngSTKA As Long
+    Dim lngSTK As Long
+    Dim lngDTA As Long
+    Dim lngDT As Long
+    Dim lngZUA As Long
+    Dim lngZU As Long
+    Dim lngDDBA As Long
+    Dim lngDDB As Long
+    Dim strBalanceInd As String
+    
+    Dim strDate As String
+    Dim strTime As String
+    Dim fso As New FileSystemObject
+    Dim strDatabasePath As String
+    Dim strTempFolder As String
+    Dim strProjectPath As String
+    Dim strDatabaseDriveLetter As String
+    Dim strSQLPath As String
+    Dim SqlCmd As String
+    Dim strSqlDBAddr As String
+    Dim MYSQLName
+    Dim strSql As String
+    Dim Tablepos As Integer
+    Dim Tablepos2 As Integer
+    Dim strMarket As String
+    Dim intMONTHS As Integer
+    Dim strSTARTDATE As String
+    Dim strFMSXSTARTDATE As String
+    Dim strAgent As String
+    Dim strDelno As String
+    Dim strConsign As String
+    Dim strDelDate As String
+    Dim strFirstDate As String
+    Dim strMastCount1 As Double
+    Dim strArcMastCount1 As Double
+    Dim strMastCount2 As Double
+    Dim strArcMastCount2 As Double
+    Dim strDetsCount1 As Double
+    Dim strArcDetsCount1 As Double
+    Dim strDetsCount2 As Double
+    Dim strArcDetsCount2 As Double
+    Dim strTransCount1 As Double
+    Dim strArcTransCount1 As Double
+    Dim strTransCount2 As Double
+    Dim strArcTransCount2 As Double
+    Dim strDebtorCount1 As Double
+    Dim strArcDebtorCount1 As Double
+    Dim strDebtorCount2 As Double
+    Dim strArcDebtorCount2 As Double
+    Dim strArcMenuCount1 As Double
+    Dim strMenuCount1 As Double
+    Dim strArcMenuCount2 As Double
+    Dim strMenuCount2 As Double
+    Dim strDDBCount1 As Double
+    Dim strArcDDBCount1 As Double
+    Dim strDDBCount2 As Double
+    Dim strArcDDBCount2 As Double
+    Dim strTotMastArc As Double
+    Dim strTotDetsArc As Double
+    Dim strTotTransArc As Double
+    Dim strTotDebtorArc As Double
+    Dim strTotDDBArc As Double
+    Dim strTotMenuArc As Double
+    Dim FileHandle As Integer
+    Dim intYear As Integer
+    Dim intMonth As Integer
+    Dim intDay As Integer
+    
+    strMarket = gblOrgstruct
+    FileHandle = FreeFile
+    
+    'U:ARCHIVE_HISTORY;READ_SCHEMA
+    If pRuleName = "READ_SCHEMA" Then
+        'this rulename will count fields from the schema of both FMS and FMS_ARC and compare them, giving an early warning if
+        'schema counts do not match
+        
+        '=============================================
+        'SELECT COUNT OF THE STK_TRANS FIELDS
+        '=============================================
+        strSql = "SELECT COUNT(COLUMN_NAME) AS STKC FROM INFORMATION_SCHEMA.COLUMNS "
+        strSql = strSql & "WHERE table_name = 'stk_trans' "
+        strSql = strSql & "AND table_schema = 'fms' "
+        Tablepos = Open_Table("STK_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        lngSTK = Val(GetField(Tablepos, "STKC"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        '=============================================
+        'SELECT COUNT OF THE STK_TRANS (ARC) FIELDS
+        '=============================================
+        strSql = "SELECT COUNT(COLUMN_NAME) AS ASTKC FROM INFORMATION_SCHEMA.COLUMNS "
+        strSql = strSql & "WHERE table_name = 'stk_trans' "
+        strSql = strSql & "AND table_schema = 'fms_arc' "
+        Tablepos = Open_Table("STK_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        lngSTKA = Val(GetField(Tablepos, "ASTKC"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        '=============================================
+        'SELECT COUNT OF THE DEBTOR_TRANS FIELDS
+        '=============================================
+        strSql = "SELECT COUNT(COLUMN_NAME) AS DTC FROM INFORMATION_SCHEMA.COLUMNS "
+        strSql = strSql & "WHERE table_name = 'debtor_trans' "
+        strSql = strSql & "AND table_schema = 'fms' "
+        Tablepos = Open_Table("STK_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        lngDT = Val(GetField(Tablepos, "DTC"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        '=============================================
+        'SELECT COUNT OF THE DEBTOR_TRANS (ARC) FIELDS
+        '=============================================
+        strSql = "SELECT COUNT(COLUMN_NAME) AS ADTC FROM INFORMATION_SCHEMA.COLUMNS "
+        strSql = strSql & "WHERE table_name = 'debtor_trans' "
+        strSql = strSql & "AND table_schema = 'fms_arc' "
+        Tablepos = Open_Table("STK_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        lngDTA = Val(GetField(Tablepos, "ADTC"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        '=============================================
+        'SELECT COUNT OF THE DAILY_DEBTOR_BALANCES FIELDS
+        '=============================================
+        strSql = "SELECT COUNT(COLUMN_NAME) AS DDBC FROM INFORMATION_SCHEMA.COLUMNS "
+        strSql = strSql & "WHERE table_name = 'daily_debtor_balances' "
+        strSql = strSql & "AND table_schema = 'fms' "
+        Tablepos = Open_Table("STK_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        lngDDB = Val(GetField(Tablepos, "DDBC"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        '=============================================
+        'SELECT COUNT OF THE DAILY_DEBTOR_BALANCES (ARC) FIELDS
+        '=============================================
+        strSql = "SELECT COUNT(COLUMN_NAME) AS ADDBC FROM INFORMATION_SCHEMA.COLUMNS "
+        strSql = strSql & "WHERE table_name = 'daily_debtor_balances' "
+        strSql = strSql & "AND table_schema = 'fms_arc' "
+        Tablepos = Open_Table("STK_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        lngDDBA = Val(GetField(Tablepos, "ADDBC"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        '=============================================
+        'SELECT COUNT OF THE DAILY_DEBTOR_BALANCES FIELDS
+        '=============================================
+        strSql = "SELECT COUNT(COLUMN_NAME) AS ZUC FROM INFORMATION_SCHEMA.COLUMNS "
+        strSql = strSql & "WHERE table_name = 'zu_menulog' "
+        strSql = strSql & "AND table_schema = 'fmsx' "
+        Tablepos = Open_Table("STK_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        lngZU = Val(GetField(Tablepos, "ZUC"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        '=============================================
+        'SELECT COUNT OF THE DAILY_DEBTOR_BALANCES (ARC) FIELDS
+        '=============================================
+        strSql = "SELECT COUNT(COLUMN_NAME) AS AZUC FROM INFORMATION_SCHEMA.COLUMNS "
+        strSql = strSql & "WHERE table_name = 'zu_menulog' "
+        strSql = strSql & "AND table_schema = 'fms_arc' "
+        Tablepos = Open_Table("STK_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        lngZUA = Val(GetField(Tablepos, "AZUC"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        'NOW COMPARE THE COUNTS AND IF THERE IS A MISMATCH, STOP THE FUNCTION
+        If lngSTK <> lngSTKA Or lngDT <> lngDTA Or lngDDB <> lngDDBA Or lngZU <> lngZUA Then
+            strBalanceInd = "N"
+        Else
+            strBalanceInd = "Y"
+        End If
+        
+        'SEND ERROR CODE TO SCREEN TO BE PROCESSED
+        Call PutObjectValue("I\BALANCE", strBalanceInd)
+    End If
+    
+    'U:ARCHIVE_HISTORY;ARCHIVE
+    If pRuleName = "ARCHIVE" Then
+        'READ THE CLIENT_MAST VARIABLE TO CALCULATE THE DATE
+        strSql = "SELECT CM_ARCHIVE_PERIOD FROM CLIENT_MAST WHERE CM_CODE = '" & strMarket & "'"
+        Tablepos = Open_Table("CLIENT_MAST", strSql, adOpenDynamic, adLockOptimistic)
+        intMONTHS = Val(GetField(Tablepos, "CM_ARCHIVE_PERIOD"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+    '==============================
+    'CALCULATE THE FIRST DATE BASED ON THE TIME OF THE MONTH IT IS RUN
+    '==============================
+        intYear = Format(Now, "YYYY")
+        intMonth = Format(Now, "MM")
+        
+        If Format(Now, "DD") <= 8 Then
+            'DAY BE THE 1ST, MONTH GO BACK ONE
+            intDay = 1
+            intMonth = intMonth - 1
+        Else
+            'DAY BE THE 1ST, MONTH BE CURRENT ARRR!
+            intDay = 1
+        End If
+        
+        strFirstDate = DateSerial(intYear, intMonth, intDay)
+        
+        'IF NO VARIABLE SET, DEFAULT TO 1 YEAR
+        If intMONTHS = 0 Then intMONTHS = 12
+        
+        'SUBTRACT ONE FROM THE MONTHS SET. EG: IF MONTH END FEB, GOING INTO MARCH, YOU DO NOT WANT TO KEEP MARCH.
+        intMONTHS = intMONTHS - 1
+        
+        'THE DATE AT WHICH WE WILL ARCHIVE BACKWARD FROM
+        strSTARTDATE = DateAdd("m", "-" & intMONTHS, strFirstDate)
+        strFMSXSTARTDATE = DateAdd("m", "-6", strFirstDate)
+        
+        'CHECKS IF THE "DATA_ARCHIVE" FOLDER EXISTS, CREATES IT IF NOT
+        If dir(App.Path & "\DATA_ARCHIVE", vbDirectory) = "" Then
+            MkDir App.Path & "\DATA_ARCHIVE"
+        End If
+        
+    '==============================
+    'CREATE THE ZU_MENULOG ON FMS_ARC IF IT DOESNT EXIST
+    '==============================
+        
+        'CREATE THE FILE ON REFRESH IF NOT EXISTS
+        strSql = "CREATE TABLE IF NOT EXISTS FMS_ARC.ZU_MENULOG (`PROGNAME` varchar(100) default NULL,`USER` varchar(20),`IP` varchar(20) default NULL,`DATE` date default NULL,`TIME` varchar(20) default NULL) ENGINE=MyISAM DEFAULT CHARSET=latin1;"
+        Tablepos = Open_Table("ADDR_TYPE", strSql, adOpenDynamic, adLockOptimistic)
+        
+    '=================
+    'VARIABLE TRACKING 1 - RECORD COUNT CHECKSUM
+    '=================
+        'STK_TRANS 1
+        strSql = "SELECT COUNT(ST_MARKET) AS TRANSCNT FROM FMS.STK_TRANS WHERE ST_MARKET = '" & strMarket & "' "
+        Tablepos = Open_Table("STK_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        strTransCount1 = Val(GetField(Tablepos, "TRANSCNT"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        'STK_TRANS 2
+        strSql = "SELECT COUNT(ST_MARKET) AS TRANSCNT FROM FMS_ARC.STK_TRANS WHERE ST_MARKET = '" & strMarket & "' "
+        Tablepos = Open_Table("STK_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        strArcTransCount1 = Val(GetField(Tablepos, "TRANSCNT"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        'DEBTOR_TRANS 1
+        strSql = "SELECT COUNT(DT_MARKET) AS TRANSCNT FROM FMS.DEBTOR_TRANS WHERE DT_MARKET = '" & strMarket & "' "
+        Tablepos = Open_Table("DEBTOR_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        strDebtorCount1 = Val(GetField(Tablepos, "TRANSCNT"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        'DEBTOR_TRANS 2
+        strSql = "SELECT COUNT(DT_MARKET) AS TRANSCNT FROM FMS_ARC.DEBTOR_TRANS WHERE DT_MARKET = '" & strMarket & "' "
+        Tablepos = Open_Table("DEBTOR_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        strArcDebtorCount1 = Val(GetField(Tablepos, "TRANSCNT"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        'DAILY_DEBTOR_BALANCES 1
+        strSql = "SELECT COUNT(DDB_DEBTOR) AS DDBCNT FROM FMS.DAILY_DEBTOR_BALANCES"
+        Tablepos = Open_Table("DAILY_DEBTOR_BALANCES", strSql, adOpenDynamic, adLockOptimistic)
+        strDDBCount1 = Val(GetField(Tablepos, "DDBCNT"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        'DAILY_DEBTOR_BALANCES 2
+        strSql = "SELECT COUNT(DDB_DEBTOR) AS DDBCNT FROM FMS_ARC.DAILY_DEBTOR_BALANCES"
+        Tablepos = Open_Table("DAILY_DEBTOR_BALANCES", strSql, adOpenDynamic, adLockOptimistic)
+        strArcDDBCount1 = Val(GetField(Tablepos, "DDBCNT"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        'MENU LOG 1
+        strSql = "SELECT COUNT(PROGNAME) AS MENUCNT FROM FMSX.ZU_MENULOG"
+        Tablepos = Open_Table("ZU_MENULOG", strSql, adOpenDynamic, adLockOptimistic)
+        strMenuCount1 = Val(GetField(Tablepos, "MENUCNT"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        'MENU LOG 2
+        strSql = "SELECT COUNT(PROGNAME) AS MENUCNT FROM FMS_ARC.ZU_MENULOG"
+        Tablepos = Open_Table("DAILY_DEBTOR_BALANCES", strSql, adOpenDynamic, adLockOptimistic)
+        strArcMenuCount1 = Val(GetField(Tablepos, "MENUCNT"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        'JD 20150929 - NEW FROM HERE TO SELECT FIELD NAMES. THIS ELIMINATES REQUIRED INTERVENTION!
+        'FROM HERE>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        '=============================================
+        'SELECT ALL OF THE STK_TRANS FIELDS
+        '=============================================
+        intCount = 0
+        strSql = "(SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
+        strSql = strSql & "WHERE table_name = 'stk_trans' "
+        strSql = strSql & "AND table_schema = 'fms' "
+        strSql = strSql & "order by column_name) "
+        Tablepos = Open_Table("STK_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        Do While RStab(Tablepos).rs.EOF = False
+            intCount = intCount + 1
+            
+            If intCount = 1 Then
+                strSTKList = GetField(Tablepos, "COLUMN_NAME")
+            Else
+                strSTKList = strSTKList & "," & GetField(Tablepos, "COLUMN_NAME")
+            End If
+            
+            RStab(Tablepos).rs.MoveNext
+        Loop
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        '=============================================
+        'SELECT ALL OF THE DEBTOR_TRANS FIELDS
+        '=============================================
+        intCount = 0
+        strSql = "(SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
+        strSql = strSql & "WHERE table_name = 'debtor_trans' "
+        strSql = strSql & "AND table_schema = 'fms' "
+        strSql = strSql & "order by column_name) "
+        Tablepos = Open_Table("DEBTOR_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        Do While RStab(Tablepos).rs.EOF = False
+            intCount = intCount + 1
+            
+            If intCount = 1 Then
+                strDTList = GetField(Tablepos, "COLUMN_NAME")
+            Else
+                strDTList = strDTList & "," & GetField(Tablepos, "COLUMN_NAME")
+            End If
+            
+            RStab(Tablepos).rs.MoveNext
+        Loop
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        '==============================================
+        'SELECT ALL OF THE DAILY_DEBTOR_BALANCES FIELDS
+        '==============================================
+        intCount = 0
+        strSql = "(SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
+        strSql = strSql & "WHERE table_name = 'daily_debtor_balances' "
+        strSql = strSql & "AND table_schema = 'fms' "
+        strSql = strSql & "order by column_name) "
+        Tablepos = Open_Table("DAILY_DEBTOR_BALANCES", strSql, adOpenDynamic, adLockOptimistic)
+        Do While RStab(Tablepos).rs.EOF = False
+            intCount = intCount + 1
+            
+            If intCount = 1 Then
+                strDDBList = GetField(Tablepos, "COLUMN_NAME")
+            Else
+                strDDBList = strDDBList & "," & GetField(Tablepos, "COLUMN_NAME")
+            End If
+            
+            RStab(Tablepos).rs.MoveNext
+        Loop
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        '==============================================
+        'SELECT ALL OF THE ZU_MENULOG FIELDS
+        '==============================================
+        intCount = 0
+        strSql = "(SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
+        strSql = strSql & "WHERE table_name = 'zu_menulog' "
+        strSql = strSql & "AND table_schema = 'fmsx' "
+        strSql = strSql & "order by column_name) "
+        Tablepos = Open_Table("DAILY_DEBTOR_BALANCES", strSql, adOpenDynamic, adLockOptimistic)
+        Do While RStab(Tablepos).rs.EOF = False
+            intCount = intCount + 1
+            
+            If intCount = 1 Then
+                strZUList = GetField(Tablepos, "COLUMN_NAME")
+            Else
+                strZUList = strZUList & "," & GetField(Tablepos, "COLUMN_NAME")
+            End If
+            
+            RStab(Tablepos).rs.MoveNext
+        Loop
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+    'TO HERE<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    
+    '=========
+    'STOCK - LOOP THROUGH STK_TRANS RECORDS. SELECT INTO THEIR ARC TABLES, AND THEN DELETE.
+    '=========
+        'STK_TRANS INSERT
+        strSql = "INSERT INTO FMS_ARC.STK_TRANS (" & strSTKList & ") "
+        strSql = strSql & "(SELECT " & strSTKList
+        strSql = strSql & " FROM FMS.STK_TRANS WHERE ST_MARKET = '" & strMarket & "' "
+        strSql = strSql & "AND ST_UPD_DATE < '" & Format(strSTARTDATE, "YYYY/MM/DD") & "')"
+        Tablepos2 = Open_Table("STK_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        
+        'STK_TRANS DELETE
+        strSql = "DELETE FROM FMS.STK_TRANS WHERE ST_MARKET = '" & strMarket & "' "
+        strSql = strSql & " AND ST_UPD_DATE < '" & Format(strSTARTDATE, "YYYY/MM/DD") & "'"
+        Tablepos2 = Open_Table("STK_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        
+        'NEW SECTION 20180525 - JD - TO MOVE UNPAID/MISC RECORDS WITHOUT UPD_DATES
+        'STK_TRANS INSERT
+        strSql = "INSERT INTO FMS_ARC.STK_TRANS (" & strSTKList & ") "
+        strSql = strSql & "(SELECT " & strSTKList
+        strSql = strSql & " FROM FMS.STK_TRANS WHERE ST_MARKET = '" & strMarket & "' "
+        strSql = strSql & "AND ST_TRDTE < '" & Format(strSTARTDATE, "YYYY/MM/DD") & "' AND ST_UPD_DATE IS NULL) "
+        Tablepos2 = Open_Table("STK_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        
+        'STK_TRANS DELETE
+        strSql = "DELETE FROM FMS.STK_TRANS WHERE ST_MARKET = '" & strMarket & "' "
+        strSql = strSql & "AND ST_TRDTE < '" & Format(strSTARTDATE, "YYYY/MM/DD") & "' AND ST_UPD_DATE IS NULL "
+        Tablepos2 = Open_Table("STK_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        
+    '=========
+    'DEBTORS - SELECT DEBTOR_TRANS RECORDS INTO THE ARC TABLE, AND THEN DELETE.
+    '=========
+        'DEBTOR_TRANS INSERT
+        strSql = "INSERT INTO FMS_ARC.DEBTOR_TRANS (" & strDTList & ") "
+        strSql = strSql & "(SELECT " & strDTList
+        strSql = strSql & " FROM FMS.DEBTOR_TRANS WHERE DT_MARKET = '" & strMarket & "' AND DT_CSVDATE < '" & Format(strSTARTDATE, "YYYY/MM/DD") & "' AND DT_CSVDATE <> '0000-00-00')"
+        Tablepos = Open_Table("DEBTOR_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        
+        'DEBTOR_TRANS DELETE
+        strSql = "DELETE FROM FMS.DEBTOR_TRANS WHERE DT_MARKET = '" & strMarket & "' AND DT_CSVDATE < '" & Format(strSTARTDATE, "YYYY/MM/DD") & "' AND DT_CSVDATE <> '0000-00-00'"
+        Tablepos = Open_Table("DEBTOR_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        
+    '=========
+    'DEBTORS - SELECT DAILY_DEBTOR_BALANCES RECORDS INTO THE ARC TABLE, AND THEN DELETE.
+    '=========
+        'DAILY DEBTOR BALANCES INSERT
+        strSql = "INSERT INTO FMS_ARC.DAILY_DEBTOR_BALANCES (" & strDDBList & ") "
+        strSql = strSql & "(SELECT " & strDDBList
+        strSql = strSql & " FROM FMS.DAILY_DEBTOR_BALANCES WHERE DDB_DATE < '" & Format(strFMSXSTARTDATE, "YYYY/MM/DD") & "')"
+        Tablepos = Open_Table("DEBTOR_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        
+        'DAILY DEBTOR BALANCES DELETE
+        strSql = "DELETE FROM FMS.DAILY_DEBTOR_BALANCES WHERE DDB_DATE < '" & Format(strFMSXSTARTDATE, "YYYY/MM/DD") & "'"
+        Tablepos = Open_Table("DEBTOR_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        
+    '=========
+    'MENU LOG - SELECT MENU LOG RECORDS INTO THE ARC TABLE, AND THEN DELETE.
+    '=========
+        'DAILY DEBTOR BALANCES INSERT
+        strSql = "INSERT INTO FMS_ARC.ZU_MENULOG (" & strZUList & ") "
+        strSql = strSql & "(SELECT " & strZUList & " FROM FMSX.ZU_MENULOG WHERE DATE < '" & Format(strFMSXSTARTDATE, "YYYY/MM/DD") & "')"
+        Tablepos = Open_Table("DEBTOR_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        
+        'DAILY DEBTOR BALANCES DELETE
+        strSql = "DELETE FROM FMSX.ZU_MENULOG WHERE DATE < '" & Format(strFMSXSTARTDATE, "YYYY/MM/DD") & "'"
+        Tablepos = Open_Table("ZU_MENULOG", strSql, adOpenDynamic, adLockOptimistic)
+        
+    '=================
+    'VARIABLE TRACKING 2 - RECORD COUNT CHECKSUM
+    '=================
+        'STK_TRANS 1
+        strSql = "SELECT COUNT(ST_MARKET) AS TRANSCNT FROM FMS.STK_TRANS WHERE ST_MARKET = '" & strMarket & "' "
+        Tablepos = Open_Table("STK_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        strTransCount2 = Val(GetField(Tablepos, "TRANSCNT"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        'STK_TRANS 2
+        strSql = "SELECT COUNT(ST_MARKET) AS TRANSCNT FROM FMS_ARC.STK_TRANS WHERE ST_MARKET = '" & strMarket & "' "
+        Tablepos = Open_Table("STK_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        strArcTransCount2 = Val(GetField(Tablepos, "TRANSCNT"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        'DEBTOR_TRANS 1
+        strSql = "SELECT COUNT(DT_MARKET) AS TRANSCNT FROM FMS.DEBTOR_TRANS WHERE DT_MARKET = '" & strMarket & "' "
+        Tablepos = Open_Table("DEBTOR_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        strDebtorCount2 = Val(GetField(Tablepos, "TRANSCNT"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        'DEBTOR_TRANS 2
+        strSql = "SELECT COUNT(DT_MARKET) AS TRANSCNT FROM FMS_ARC.DEBTOR_TRANS WHERE DT_MARKET = '" & strMarket & "' "
+        Tablepos = Open_Table("DEBTOR_TRANS", strSql, adOpenDynamic, adLockOptimistic)
+        strArcDebtorCount2 = Val(GetField(Tablepos, "TRANSCNT"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        'DAILY_DEBTOR_BALANCES 1
+        strSql = "SELECT COUNT(DDB_DEBTOR) AS DDBCNT FROM FMS.DAILY_DEBTOR_BALANCES"
+        Tablepos = Open_Table("DAILY_DEBTOR_BALANCES", strSql, adOpenDynamic, adLockOptimistic)
+        strDDBCount2 = Val(GetField(Tablepos, "DDBCNT"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        'DAILY_DEBTOR_BALANCES 2
+        strSql = "SELECT COUNT(DDB_DEBTOR) AS DDBCNT FROM FMS_ARC.DAILY_DEBTOR_BALANCES"
+        Tablepos = Open_Table("DAILY_DEBTOR_BALANCES", strSql, adOpenDynamic, adLockOptimistic)
+        strArcDDBCount2 = Val(GetField(Tablepos, "DDBCNT"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        'MENU LOG 1
+        strSql = "SELECT COUNT(PROGNAME) AS MENUCNT FROM FMSX.ZU_MENULOG"
+        Tablepos = Open_Table("ZU_MENULOG", strSql, adOpenDynamic, adLockOptimistic)
+        strMenuCount2 = Val(GetField(Tablepos, "MENUCNT"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        'MENU LOG 2
+        strSql = "SELECT COUNT(PROGNAME) AS MENUCNT FROM FMS_ARC.ZU_MENULOG"
+        Tablepos = Open_Table("DAILY_DEBTOR_BALANCES", strSql, adOpenDynamic, adLockOptimistic)
+        strArcMenuCount2 = Val(GetField(Tablepos, "MENUCNT"))
+        RStab(Tablepos).rs.Close
+        RStab(Tablepos).Open = False
+        
+        'DO SOME CALCULATIONS FOR THE INSERTED/DELETED RECORDS
+        strTotTransArc = strArcTransCount1 - strArcTransCount2
+        strTotDebtorArc = strArcDebtorCount1 - strArcDebtorCount2
+        strTotDDBArc = strArcDDBCount1 - strArcDDBCount2
+        strTotMenuArc = strArcMenuCount1 - strArcMenuCount2
+        
+        'OUTPUT TO A TEXT FILE
+        Open App.Path & "\DATA_ARCHIVE\DATA_ARCHIVE_" & Format(Now, "DDMMMYYYY") & "_" & Format(Now, "HHMMSS") & ".txt" For Output As #FileHandle
+        
+        Print #FileHandle, "DATA ARCHIVING RUN ON " & Format(Now, "DD MMMM YYYY") & " AT " & Format(Now, "HH:MM:SS") & " BY " & gblUser
+        Print #FileHandle, ""
+        Print #FileHandle, "*************"
+        Print #FileHandle, "MASTER TABLES"
+        Print #FileHandle, "*************"
+        Print #FileHandle, "BEFORE:"
+        Print #FileHandle, "  STK_TRANS    = " & strTransCount1
+        Print #FileHandle, "  DEBTOR_TRANS = " & strDebtorCount1
+        Print #FileHandle, "  DAILY_DEBTOR = " & strDDBCount1
+        Print #FileHandle, "  MENU_LOG     = " & strMenuCount1
+        Print #FileHandle, ""
+        Print #FileHandle, "AFTER:"
+        Print #FileHandle, "  STK_TRANS    = " & strTransCount2
+        Print #FileHandle, "  DEBTOR_TRANS = " & strDebtorCount2
+        Print #FileHandle, "  DAILY_DEBTOR = " & strDDBCount2
+        Print #FileHandle, "  MENU_LOG     = " & strMenuCount2
+        Print #FileHandle, ""
+        Print #FileHandle, "**************"
+        Print #FileHandle, "ARCHIVE TABLES"
+        Print #FileHandle, "**************"
+        Print #FileHandle, "  BEFORE:"
+        Print #FileHandle, "  ARC_STK_TRANS    = " & strArcTransCount1
+        Print #FileHandle, "  ARC_DEBTOR_TRANS = " & strArcDebtorCount1
+        Print #FileHandle, "  ARC_DAILY_DEBTOR = " & strArcDDBCount1
+        Print #FileHandle, "  ARC_MENU_LOG     = " & strArcMenuCount1
+        Print #FileHandle, ""
+        Print #FileHandle, "AFTER:"
+        Print #FileHandle, "  ARC_STK_TRANS    = " & strArcTransCount2
+        Print #FileHandle, "  ARC_DEBTOR_TRANS = " & strArcDebtorCount2
+        Print #FileHandle, "  ARC_DAILY_DEBTOR = " & strArcDDBCount2
+        Print #FileHandle, "  ARC_MENU_LOG     = " & strArcMenuCount2
+        Print #FileHandle, ""
+        'CHECKSUM OUTPUTS
+        If strTransCount1 - (strArcTransCount2 - strArcTransCount1) <> strTransCount2 Then Print #FileHandle, "TRANS COUNT NOT BALANCING!"
+        If strDebtorCount1 - (strArcDebtorCount2 - strArcDebtorCount1) <> strDebtorCount2 Then Print #FileHandle, "DEBTOR COUNT NOT BALANCING!"
+        If strDDBCount1 - (strArcDDBCount2 - strArcDDBCount1) <> strDDBCount2 Then Print #FileHandle, "DDB COUNT NOT BALANCING!"
+        If strMenuCount1 - (strArcMenuCount2 - strArcMenuCount1) <> strMenuCount2 Then Print #FileHandle, "MENU COUNT NOT BALANCING!"
+        Close #FileHandle
+        
+        'JD 2018-03-02 TO WRITE A THE DATE OF THE DATA ARCHIVE TO THE DATABASE FOR REPORTING PURPOSES
+        strSql = "SELECT ZV_TEXT FROM ZV_USER_DEFAULTS WHERE ZV_CODE = 'DATA_ARCHIVE'"
+        Tablepos = Open_Table("ZV_USER_DEFAULTS", strSql, adOpenDynamic, adLockOptimistic)
+        If RStab(Tablepos).rs.EOF = True Then
+            RStab(Tablepos).rs.Close
+            RStab(Tablepos).Open = False
+            
+            strSql = "INSERT INTO ZV_USER_DEFAULTS (ZV_CODE,ZV_TEXT) VALUES ('DATA_ARCHIVE','" & Format(Now, "YYYY/MM/DD") & "')"
+            Tablepos = Open_Table("ZV_USER_DEFAULTS", strSql, adOpenDynamic, adLockOptimistic)
+        Else
+            RStab(Tablepos).rs.Close
+            RStab(Tablepos).Open = False
+            
+            strSql = "UPDATE ZV_USER_DEFAULTS SET ZV_TEXT = '" & Format(Now, "YYYY/MM/DD") & "' WHERE ZV_CODE = 'DATA_ARCHIVE'"
+            Tablepos = Open_Table("ZV_USER_DEFAULTS", strSql, adOpenDynamic, adLockOptimistic)
+        End If
+        
+    End If
+    
+    If pRuleName = "BACKUP_ARC" Then
+        ExecCmd "C:\legend\proj_fms\bin\backup_arc.bat"
+    End If
+End Function
